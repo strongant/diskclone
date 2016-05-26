@@ -9,9 +9,14 @@ npm install
 # Or update
 npm update
 ```
+Then run the **bower**:
+
+```bash
+# To download `angular-material...` some files in the  `/bower_components` directory
+bower  install
 
 Then run the **gulp** tasks:
 
 ```bash
-# To build `angular-material.js/.css` and `Theme` files in the `/dist` directory
+# To run `electron ./app/main.js` to start window
 gulp run
