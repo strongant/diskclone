@@ -1,4 +1,17 @@
 (function() {
+  const {
+    remote
+  } = require('electron');
+  const {
+    BrowserWindow,
+    dialog,
+    shell
+  } = remote;
+  const fs = require('fs');
+  const exec = require('child_process').exec;
+  const parseString = require('xml2js').parseString;
+  var cmdStr = 'sudo lshw -class disk -xml';
+
   angular.module('app')
     .controller('diskController', ['diskService', '$q', '$mdDialog',
       DiskController
@@ -40,7 +53,23 @@
     self.loadDisk = loadDisk;
     //加载当前系统中的所有分区
     function loadDisk() {
-
+      console.log('loadDisk');
+      var deferred = $q.defer();
+      exec(cmdStr, {
+        explicitArray: false,
+        ignoreAttrs: true
+      }, function(err, stdout, stderr) {
+        if (err) deferred.reject(err);
+        //var data = JSON.parse(stdout);
+        var data = stdout;
+        //transfer xml to JSON
+        parseString(data, function(err, result) {
+          if (err) deferred.reject(err);
+          console.log(JSON.stringify(result));
+          deferred.resolve(result);
+        });
+      });
+      return deferred.promise;
     }
   }
 
