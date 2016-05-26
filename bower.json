@@ -1,0 +1,28 @@
+{
+  "name": "diskclone",
+  "description": "copy disk's files to usb",
+  "main": "main.js",
+  "authors": [
+    "strongant"
+  ],
+  "license": "MIK",
+  "keywords": [
+    "diskclone"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "^1.0.9",
+    "angular-route": "^1.5.5",
+    "angular": "^1.4.4",
+    "bootstrap": "^3.3.5",
+    "jquery": "^2.2.4",
+    "angular-messages": "^1.5.5"
+  }
+}

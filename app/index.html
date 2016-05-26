@@ -1,0 +1,31 @@
+<html lang="en" ng-app="app">
+    <title>DiskClone</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"gt;
+    <meta name="description" content="用于操作Linux上硬盘文件复制到USB">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <!-- build:css assets/css/app.css -->
+    <link rel="stylesheet" href="../bower_components/angular-material/angular-material.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="disk/disk.css" media="screen" title="no title" charset="utf-8">
+    <!-- endbuild -->
+<body>
+    <ng-view></ng-view>
+    <!-- build:js scripts/vendor.js -->
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/angular-animate/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-messages/angular-messages.js" charset="utf-8"></script>
+    <script src="../bower_components/angular-material/angular-material.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:app scripts/app.js -->
+    <script src="./app.js"></script>
+    <script src="./disk/diskService.js"></script>
+    <script src="./disk/diskController.js"></script>
+    <script src="./usb/usbService.js" charset="utf-8"></script>
+    <script src="./usb/usbController.js" charset="utf-8"></script>
+    <!-- endbuild -->
+</body>
+</html>
