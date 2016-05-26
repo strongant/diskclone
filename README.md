@@ -14,7 +14,7 @@ Then run the **bower**:
 ```bash
 # To download `angular-material...` some files in the  `/bower_components` directory
 bower  install
-
+```
 Then run the **gulp** tasks:
 
 ```bash
