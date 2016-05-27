@@ -1,19 +1,9 @@
 (function() {
-  const {
-    remote
-  } = require('electron');
-  const {
-    BrowserWindow,
-    dialog,
-    shell
-  } = remote;
-  const fs = require('fs');
-  const exec = require('child_process').exec;
-  const parseString = require('xml2js').parseString;
-  var cmdStr = 'sudo lshw -class disk -xml';
+
 
   angular.module('app')
-    .controller('diskController', ['diskService', '$q', '$mdDialog',
+    .controller('diskController', ['$scope', '$interval', 'diskService', '$q',
+      '$mdDialog',
       DiskController
     ]).config(function($mdIconProvider) {
       $mdIconProvider.iconSet("avatar",
@@ -22,54 +12,85 @@
     });
 
 
-  function DiskController($scope, diskService, $q, $mdDialog) {
-    this.tiles = buildGridModel({
+
+  function DiskController($scope, $interval, diskService, $q, $mdDialog) {
+    var self = this,
+      j = 0,
+      counter = 0;
+    self.activated = true;
+    self.determinateValue = 30;
+
+    var stop = $interval(function() {
+      // Increment the Determinate loader
+      self.determinateValue += 1;
+      if (self.determinateValue > 100) {
+        self.determinateValue = 30;
+      }
+    }, 100, 0, true);
+    self.tiles = buildGridModel({
       icon: "avatar:svg-",
       title: "/dev/",
-      background: ""
+      background: "red",
+      capacity: "100",
+      useCapacity: "30",
+      unit: "G",
+      capacityDiff: "40"
     });
-
+    //对加载到的硬盘进行格式化显示
     function buildGridModel(tileTmpl) {
       var it, results = [];
-      for (var j = 0; j < 1; j++) {
-        it = angular.extend({}, tileTmpl);
-        it.icon = it.icon + 'disk';
-        it.title = it.title + 'sda1';
-        it.span = {
-          row: 1,
-          col: 1
-        };
-        switch (j + 1) {
-          case 1:
-            it.background = "red";
-            it.span.row = it.span.col = 3;
-            break;
+      diskService.loadDiskList().then(function(disk) {
+        if (!disk && !disk.list.node) {
+          console.log('this computer is no disk or load error');
+          return;
         }
-        results.push(it);
-      }
-      return results;
-    }
-    var self = this;
-    self.loadDisk = loadDisk;
-    //加载当前系统中的所有分区
-    function loadDisk() {
-      console.log('loadDisk');
-      var deferred = $q.defer();
-      exec(cmdStr, {
-        explicitArray: false,
-        ignoreAttrs: true
-      }, function(err, stdout, stderr) {
-        if (err) deferred.reject(err);
-        //var data = JSON.parse(stdout);
-        var data = stdout;
-        //transfer xml to JSON
-        parseString(data, function(err, result) {
-          if (err) deferred.reject(err);
-          console.log(JSON.stringify(result));
-          deferred.resolve(result);
-        });
+        console.log('diskController - > getAllDisk:');
+        console.log(disk);
+        var count = Object.keys(disk.list.node).length;
+        console.log(count);
+        var key, diskListNode = disk.list.node;
+        var diskKeys = Object.keys(diskListNode);
+        for (var i = 0; i < 5; i++) {
+          for (key in diskKeys) {
+            it = angular.extend({}, tileTmpl);
+            it.icon = it.icon + 'disk';
+            it.span = {
+              row: 1,
+              col: 1
+            };
+            it.background = it.background;
+            it.span.row = it.span.col = 3;
+            if (typeof diskListNode[key].logicalname === 'string') {
+              console.log(diskListNode[key].logicalname);
+              var keyString = diskListNode[key].logicalname;
+              it.title = keyString;
+            } else if (typeof diskListNode[key].logicalname === 'object') {
+              var keys = diskListNode[key].logicalname;
+              var keyArr = keys[0];
+              console.log('arrs:' + keyArr);
+              it.title = keyArr;
+            }
+            if (diskListNode[key].size) {
+              console.log(diskListNode[key].size);
+              if (Object.keys(diskListNode[key].size)) {
+                var diskNodeKey = Object.keys(diskListNode[key].size)[0];
+                var diskNodeSize = diskListNode[key].size[diskNodeKey] /
+                  1024 /
+                  1024 / 1024;
+                console.log('disk size:' + diskNodeSize.toFixed(2));
+                it.capacity = diskNodeSize.toFixed(2);
+              }
+
+
+            }
+            results.push(it);
+          }
+        }
+        //加载完毕取消等待消息
+        $interval.cancel(stop);
+        self.activated = false;
       });
-      return deferred.promise;
+      return results;
     }
   }
 
