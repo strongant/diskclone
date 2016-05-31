@@ -11,6 +11,7 @@
   const fs = require('fs');
   const exec = require('child_process').exec;
   const parseString = require('xml2js').parseString;
+  //sudo df -hl |grep /dev/sda1  获取使用大小
   var cmdStr = 'sudo lshw -class disk -xml';
 
   angular.module('app')
@@ -44,6 +45,8 @@
       });
       return deferred.promise;
     }
+    //通过指定的设备名称计算已经使用空间
+
   }
 
 

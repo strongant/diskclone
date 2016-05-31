@@ -1,34 +1,27 @@
-div {
-  border: 2px solid darkblue;
-}
-
 
 .box3, .box2, .box1 {
-  display:flex;
-  box-sizing: border-box;
-  min-width:100%;
+    display: flex;
+    box-sizing: border-box;
+    min-width: 100%;
 }
-
 .box1 {
-  max-height:60%;
-  flex:1 1 60%;
+    max-height: 50%;
+    flex: 1 1 50%;
 }
-
 .box2 {
-  height:12%;
+    height: 15%;
 }
-
 .box3 {
-  height:20%;
-  max-height:20%;
-  flex:1 1 20%;
+    height: 25%;
+    max-height: 25%;
+    flex: 1 1 25%;
 }
 span {
     text-align: center;
 }
-body{
-  overflow: hidden;
-}
+/*body {
+    overflow: hidden;
+}*/
 .gridListdemoDynamicTiles md-icon {
     width: 50%;
     height: 30%;
@@ -38,7 +31,6 @@ body{
     -moz-border-radius: 50%;
     border-radius: 50%;
 }
-
 .gridListdemoDynamicTiles md-grid-list {
     margin: 8px;
 }
@@ -57,14 +49,15 @@ body{
     background: rgba(0, 0, 0, 0.68);
     height: 36px;
 }
-.gridListdemoDynamicTiles md-grid-tile{
-  margin-bottom: 20px;
+.gridListdemoDynamicTiles md-grid-tile {
+    margin-bottom: 20px;
 }
 .gridListdemoDynamicTiles md-grid-tile-footer figcaption {
     width: 100%;
 }
 .gridListdemoDynamicTiles md-grid-tile-footer figcaption h3 {
     margin: 0;
+    margin-top: 10px;
     font-weight: 700;
     width: 100%;
     text-align: center;
@@ -72,7 +65,6 @@ body{
 .gridListdemoDynamicTiles md-progress-circular {
     margin-bottom: 20px;
 }
-
 .sample-show-hide {
     padding: 10px;
     border: 1px solid black;
@@ -85,13 +77,54 @@ body{
 .sample-show-hide.ng-hide {
     opacity: 0;
 }
-.gridListdemoDynamicTiles md-progress-linear{
-  padding-top: 10px;
- }
- .gridListdemoDynamicTiles md-progress-linear .md-container{
-   margin-left:-5px;
-   width: 80%;
- }
- .gridListdemoDynamicTiles md-grid-list md-grid-tile figure p{
-   margin-left: -20px;
+.gridListdemoDynamicTiles md-progress-linear {
+    margin-top: -9px;
+}
+.gridListdemoDynamicTiles md-progress-linear .md-container {
+    /*margin-left: -5px;*/
+    width: 90%;
+}
+/*.gridListdemoDynamicTiles md-grid-list md-grid-tile figure p {
+    /*margin-left: -20px;*/
+}*/
+.box1 fieldset.standard {
+    border-style: solid;
+    border-width: 1px;
+}
+.box1 legend {
+    color: #3F51B5;
+}
+.box1 legend code {
+    color: #3F51B5;
+    font-weight: normal;
+}
+.gridListdemoDynamicTiles md-grid-tile:hover{
+  cursor: pointer;
+  border: 3px solid yellow;
+}
+.gridListdemoDynamicTiles md-grid-tile:after{
+border:2px solid blue;
+}
+/*.box2 md-content section{
+  padding-left: 10px;
+}*/
+.box2 md-input-container{
+  margin-left: 15%;
+}
+.box1,.box2,.box3,.nav md-sidenav{
+  border: 1px solid rgba(85, 97, 85, 0.27);
+}
+.box2{
+  border-top: none;
+  border-bottom: none;
+}
+.nav md-sidenav{
+  border-right: none;
+  border-bottom: none;
+}
+.box2 md-checkbox{
+  margin-top: 12px;
+}
+.box2 md-select{
+  margin-top: 5px;
 }
