@@ -50,7 +50,7 @@
             </div>
             <div class="box2" class="container-fluid">
                 <md-content flex layout-padding class="md-padding">
-                    <section layout="row" layout-sm="column" layout-align="center top" layout-wrap>
+                    <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
                         <md-input-container>
                             <md-checkbox ng-model="vm.hash" aria-label="hash">
                                 哈希
@@ -70,8 +70,19 @@
                     </section>
                 </md-content>
             </div>
-            <div class="box3">
-              box3
+            <div class="box3" class="container-fluid" layout-align="center center">
+                <md-content layout="row" flex layout-padding layout-align="center center">
+                    <md-grid-list flex layout-padding ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
+                        <md-grid-tile class="blue" md-colspan-gt-sm="1" md-rowspan-gt-sm="3">
+                            <md-icon md-svg-icon="avatar:svg-usb">
+                            </md-icon>
+                            <md-grid-tile-footer>
+                                <h3>USB</h3>
+                            </md-grid-tile-footer>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-content>
+                <!-- box3
               选中硬盘:
                 {{vm.disks}}
                 <br>
@@ -79,7 +90,8 @@
                 {{vm.hash}}
                 <br>
                 块大小：
-                {{vm.blockSize}}
+                {{vm.blockSize}} -->
+
             </div>
         </div>
 

@@ -5,7 +5,8 @@
       return input;
     };
   });
-  angular.module('app', ['ngRoute', 'ngMaterial', 'ngAnimate', 'quotereplace',
+  angular.module('app', ['ngRoute', 'ngMaterial', 'ngAnimate',
+      'quotereplace',
       'checklist-model'
     ])
     .config(['$routeProvider', function($routeProvider) {

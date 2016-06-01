@@ -28,6 +28,8 @@
     //硬盘详细信息展示
     self.detailData = '点击左边硬盘显示详细信息';
     self.showTitle = '显示硬盘详情';
+    //当前计算中的USB设备信息
+
 
 
     var stop = $interval(function() {
@@ -73,16 +75,7 @@
           it.diskData = diskListNode[key];
           it.background = it.background;
           it.span.row = it.span.col = 3;
-          if (typeof diskListNode[key].logicalname === 'string') {
-            console.log(diskListNode[key].logicalname);
-            var keyString = diskListNode[key].logicalname;
-            it.title = keyString;
-          } else if (typeof diskListNode[key].logicalname === 'object') {
-            var keys = diskListNode[key].logicalname;
-            var keyArr = keys[0];
-            console.log('arrs:' + keyArr);
-            it.title = keyArr;
-          }
+          //计算设备大小
           if (diskListNode[key].size) {
             console.log(diskListNode[key].size);
             if (Object.keys(diskListNode[key].size)) {
@@ -93,6 +86,23 @@
               console.log('disk size:' + diskNodeSize.toFixed(2));
               it.capacity = diskNodeSize.toFixed(2);
             }
+            //过滤USB信息
+            if (diskListNode[key].serial !== undifined) {
+              if (typeof diskListNode[key].logicalname === 'string') {
+                console.log(diskListNode[key].logicalname);
+                var keyString = diskListNode[key].logicalname;
+                it.title = keyString;
+              } else if (typeof diskListNode[key].logicalname ===
+                'object') {
+                var keys = diskListNode[key].logicalname;
+                var keyArr = keys[0];
+                console.log('arrs:' + keyArr);
+                it.title = keyArr;
+              }
+            } else {
+
+            }
+
 
 
           }
