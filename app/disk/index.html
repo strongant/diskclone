@@ -1,100 +1,122 @@
-<body ng-app="app" ng-cloak layout="column">
-
-    <md-toolbar>
-        <div flex layout="column">
-            <md-icon md-svg-icon="avatar:svg-desktop-mac"></md-icon>
-            <span>SPSP-IT DiskClone</span>
-        </div>
-    </md-toolbar>
-    <div class="nav" flex layout="row" ng-controller="diskController as vm">
-        <md-sidenav flex="30" md-is-locked-open="true" class="md-whiteframe-z1">
-            <md-content>
-                <!-- <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="4px">
-                    <md-grid-tile md-rowspan="2" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1" ng-class="tile.background">
-                        <md-icon md-svg-icon="avatar:svg-1"></md-icon>
+<md-toolbar>
+    <div flex layout="column">
+        <md-icon md-svg-icon="avatar:svg-desktop-mac"></md-icon>
+        <span>SPSP-IT DiskClone</span>
+    </div>
+</md-toolbar>
+<div class="nav" flex layout="row">
+    <md-sidenav flex="30" md-is-locked-open="true" class="md-whiteframe-z1">
+        <md-content>
+            <div flex="" ng-cloak="" class="gridListdemoDynamicTiles">
+                <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                    <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                </div>
+                <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
+                    <md-grid-tile ng-click="vm.showCurrentDiskInfo(tile.diskData,tile.title)" class="md-grid-tile check-element sample-show-hide" style="clear:both;" ng-repeat="tile in vm.tiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1"
+                        md-colspan-xs="1" ng-class="tile.background">
+                        <md-icon md-svg-icon="{{tile.icon}}">
+                        </md-icon>
+                        <md-progress-linear md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
+                        <p>{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
                         <md-grid-tile-footer>
-                            <h3>/dev/sda1</h3></md-grid-tile-footer>
+                            <h3><md-checkbox checklist-model="vm.disks" checklist-value="tile.title" aria-label="Checkbox">{{tile.title}}</md-checkbox></h3>
+                        </md-grid-tile-footer>
                     </md-grid-tile>
-                </md-grid-list> -->
-                <!--正常显示-->
-                <div flex="" ng-cloak="" class="gridListdemoDynamicTiles">
+                </md-grid-list>
+            </div>
+        </md-content>
+    </md-sidenav>
+
+
+    <div layout="column" flex="" class="layout-column flex">
+        <div class="box1" class="container-fluid">
+            <md-content flex layout-padding>
+
+                <fieldset class="standard">
+                    <legend>
+                        <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                            <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                        </div>
+                        <span ng-if="!vm.activated">{{vm.showTitle}}</span>
+                    </legend>
                     <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
                         <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                     </div>
-                    <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
-                        <md-grid-tile ng-click="vm.showCurrentDiskInfo(tile.diskData,tile.title)" class="md-grid-tile check-element sample-show-hide" style="clear:both;" ng-repeat="tile in vm.tiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1"
-                            md-colspan-xs="1" ng-class="tile.background">
-                            <md-icon md-svg-icon="{{tile.icon}}">
-                            </md-icon>
-                            <md-progress-linear md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
-                            <p>{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
-                            <md-grid-tile-footer>
-                                <h3><md-checkbox checklist-model="vm.disks" checklist-value="tile.title" aria-label="Checkbox">{{tile.title}}</md-checkbox></h3>
-                            </md-grid-tile-footer>
-                        </md-grid-tile>
-                    </md-grid-list>
-                </div>
+                    <pre ng-if="!vm.activated">{{vm.detailData  | json:2 |quotereplace}}</pre>
+                </fieldset>
             </md-content>
-        </md-sidenav>
-
-
-        <div layout="column" flex="" class="layout-column flex">
-            <div class="box1" class="container-fluid">
-                <md-content flex layout-padding>
-                    <!-- <p ng-bind-html="vm.detailData | unsafe"></p> -->
-                    <fieldset class="standard">
-                        <legend>{{vm.showTitle}}</legend>
-                        <pre>{{vm.detailData  | json:2 |quotereplace}}</pre>
-                    </fieldset>
-                </md-content>
-            </div>
-            <div class="box2" class="container-fluid">
-                <md-content flex layout-padding class="md-padding">
-                    <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
-                        <md-input-container>
-                            <md-checkbox ng-model="vm.hash" aria-label="hash">
-                                哈希
-                            </md-checkbox>
-                        </md-input-container>
-                        <md-input-container>
-                            <label>块大小</label>
-                            <md-select ng-model="vm.blockSize">
-                                <md-option ng-repeat="size in vm.diskSizeType" value="{{size}}">
-                                    {{size}}M
-                                </md-option>
-                            </md-select>
-                        </md-input-container>
-                        <md-input-container>
-                            <md-button class="md-raised md-primary">复制</md-button>
-                        </md-input-container>
-                    </section>
-                </md-content>
-            </div>
-            <div class="box3" class="container-fluid" layout-align="center center">
-                <md-content layout="row" flex layout-padding layout-align="center center">
-                    <md-grid-list flex layout-padding ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
-                        <md-grid-tile class="blue" md-colspan-gt-sm="1" md-rowspan-gt-sm="3">
-                            <md-icon md-svg-icon="avatar:svg-usb">
-                            </md-icon>
-                            <md-grid-tile-footer>
-                                <h3>USB</h3>
-                            </md-grid-tile-footer>
-                        </md-grid-tile>
-                    </md-grid-list>
-                </md-content>
-                <!-- box3
-              选中硬盘:
-                {{vm.disks}}
-                <br>
-                哈希:
-                {{vm.hash}}
-                <br>
-                块大小：
-                {{vm.blockSize}} -->
-
-            </div>
         </div>
+        <div class="box2" class="container-fluid">
+            <md-content flex layout-padding class="md-padding">
+                <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                    <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                </div>
+                <section ng-if="!vm.activated" layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+                    <md-input-container>
+                        <md-checkbox ng-model="vm.hash" aria-label="hash">
+                            哈希
+                        </md-checkbox>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>块大小</label>
+                        <md-select ng-model="vm.blockSize">
+                            <md-option ng-repeat="size in vm.diskSizeType" value="{{size}}">
+                                {{size}}M
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <md-button class="md-raised md-primary">复制</md-button>
+                    </md-input-container>
+                </section>
+            </md-content>
+        </div>
+        <div class="box3" class="container-fluid">
 
+            <md-content layout="column" flex layout-padding>
+                <div layout="column" layout-wrap="">
+                    <div layout="column">
+                        <div>
+                            <md-checkbox ng-if="!vm.activated" aria-label="Select All">
+                                <span ng-if="isChecked()">不-</span>选择U盘
+                            </md-checkbox>
+                            <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                                <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                            </div>
+                            <div layout="row" layout-wrap flex>
+                                <md-grid-list flex ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
+                                    <md-grid-tile ng-repeat="tile in vm.usbArr" class="blue" md-colspan-gt-sm="4" md-rowspan-gt-sm="1">
+
+                                        <md-checkbox style="margin-top:5%;">
+                                            {{ tile.title }}
+                                        </md-checkbox>
+                                        <md-icon  md-svg-icon="{{tile.icon}}">
+                                        </md-icon>
+                                        <md-progress-linear  md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
+                                        <p layout-margin >{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
+                                    </md-grid-tile>
+                                </md-grid-list>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <md-grid-list flex layout-padding ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="5:4" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px"> -->
+
+            </md-content>
+
+            <!-- </body>
+            <!box3
+            选中硬盘:
+            {{vm.disks}}
+            <br>
+            哈希:
+            {{vm.hash}}
+            <br>
+            块大小：
+            {{vm.blockSize}} -->
+        </div>
     </div>
 
-</body>
+</div>

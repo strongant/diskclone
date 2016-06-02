@@ -91,7 +91,7 @@ span {
 
 
 }
-*/ .box1 fieldset.standard {
+.box1 fieldset.standard {
     border-style: solid;
     border-width: 1px;
 }
@@ -133,3 +133,13 @@ span {
 .box3 .blue {
     background: #84ffff;
 }
+.box3 md-progress-linear .md-container{
+margin-left: 10px;
+  width: 70%;
+}
+.box3{
+
+}
+/*.box3 div{
+  border:1px solid green;
+}*/

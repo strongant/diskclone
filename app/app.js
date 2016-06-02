@@ -13,7 +13,7 @@
       $routeProvider.when('/', {
         templateUrl: './disk/index.html',
         controller: 'diskController',
-        controllerAs: '_diskctrl'
+        controllerAs: 'vm'
       });
       $routeProvider.otherwise({
         redirectTo: '/'
