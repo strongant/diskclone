@@ -6,23 +6,30 @@
 </md-toolbar>
 <div class="nav" flex layout="row">
     <md-sidenav flex="30" md-is-locked-open="true" class="md-whiteframe-z1">
-        <md-content>
+        <md-content ng-class="{true: 'custom_md-content'}[vm.tiles.length==1]">
             <div flex="" ng-cloak="" class="gridListdemoDynamicTiles">
                 <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
                     <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                 </div>
-                <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
-                    <md-grid-tile ng-click="vm.showCurrentDiskInfo(tile.diskData,tile.title)" class="md-grid-tile check-element sample-show-hide" style="clear:both;" ng-repeat="tile in vm.tiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1"
-                        md-colspan-xs="1" ng-class="tile.background">
-                        <md-icon md-svg-icon="{{tile.icon}}">
-                        </md-icon>
-                        <md-progress-linear md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
-                        <p>{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
-                        <md-grid-tile-footer>
-                            <h3><md-checkbox checklist-model="vm.disks" checklist-value="tile.title" aria-label="Checkbox">{{tile.title}}</md-checkbox></h3>
-                        </md-grid-tile-footer>
-                    </md-grid-tile>
-                </md-grid-list>
+
+
+
+                <md-radio-group ng-model="vm.disks">
+                    <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
+
+                        <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1"
+                            md-colspan-xs="1" ng-class="tile.background">
+                            <md-radio-button value="{{tile.title}}" aria-label="{{tile.title}}" class="md-primary"> </md-radio-button>
+                            <md-icon md-svg-icon="{{tile.icon}}">
+                            </md-icon>
+                            <md-progress-linear md-mode="determinate" value="100"></md-progress-linear>
+                            <p>{{tile.capacity}}{{tile.unit}}</p>
+                            <md-grid-tile-footer>
+                                <h3>{{tile.title}}</h3>
+                            </md-grid-tile-footer>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-radio-group>
             </div>
         </md-content>
     </md-sidenav>
@@ -31,18 +38,35 @@
     <div layout="column" flex="" class="layout-column flex">
         <div class="box1" class="container-fluid">
             <md-content flex layout-padding>
-
-                <fieldset class="standard">
+                <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                    <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                </div>
+                <fieldset ng-if="!vm.activated" class="standard">
                     <legend>
-                        <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
-                            <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
-                        </div>
                         <span ng-if="!vm.activated">{{vm.showTitle}}</span>
                     </legend>
                     <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
                         <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                     </div>
-                    <pre ng-if="!vm.activated">{{vm.detailData  | json:2 |quotereplace}}</pre>
+                    <!-- <pre ng-if="!vm.activated">{{vm.detailData  | json:2 |quotereplace}}</pre> -->
+                    <md-table-container ng-if="!vm.activated">
+                        <table md-table>
+                            <thead md-head>
+                                <tr md-row>
+                                    <th md-column><span>名称</span></th>
+                                    <th md-column><span>值</span></th>
+                                </tr>
+                            </thead>
+                            <tbody md-body>
+                                <tr md-row ng-repeat="diskdata in vm.detailData">
+                                    <td md-cell>{{diskdata.key}}</td>
+                                    <td md-cell>
+                                        {{diskdata.value}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-table-container>
                 </fieldset>
             </md-content>
         </div>
@@ -77,23 +101,27 @@
                 <div layout="column" layout-wrap="">
                     <div layout="column">
                         <div>
-                            <md-checkbox ng-if="!vm.activated" aria-label="Select All">
-                                <span ng-if="isChecked()">不-</span>选择U盘
+                            <md-checkbox ng-if="!vm.activated" aria-label="全选" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()" aria-label="全选">
+                                <span ng-if="vm.isChecked()">不选</span><span ng-if="!vm.isChecked()">全选</span>
                             </md-checkbox>
                             <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
                                 <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                             </div>
-                            <div layout="row" layout-wrap flex>
+                            <!-- layout="row"   layout-wrap flex -->
+                            <div class="row">
                                 <md-grid-list flex ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
-                                    <md-grid-tile ng-repeat="tile in vm.usbArr" class="blue" md-colspan-gt-sm="4" md-rowspan-gt-sm="1">
+                                    <md-grid-tile layout="row" ng-repeat="tile in vm.usbArr" class="blue" md-colspan-gt-sm="4" md-rowspan-gt-sm="1">
 
-                                        <md-checkbox style="margin-top:5%;">
+                                        <md-checkbox ng-checked="vm.exists(tile.realTitle, vm.selected)" ng-click="vm.toggle(tile.realTitle, vm.selected)">
+                                            <md-tooltip>
+                                                {{ tile.realTitle }}
+                                            </md-tooltip>
                                             {{ tile.title }}
                                         </md-checkbox>
-                                        <md-icon  md-svg-icon="{{tile.icon}}">
+                                        <md-icon md-svg-icon="{{tile.icon}}">
                                         </md-icon>
-                                        <md-progress-linear  md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
-                                        <p layout-margin >{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
+                                        <md-progress-linear md-mode="determinate" value="{{tile.capacityDiff}}"></md-progress-linear>
+                                        <p layout-align="center">{{tile.useCapacity}}{{tile.unit}}/{{tile.capacity}}{{tile.unit}}</p>
                                     </md-grid-tile>
                                 </md-grid-list>
                             </div>

@@ -7,7 +7,7 @@
   });
   angular.module('app', ['ngRoute', 'ngMaterial', 'ngAnimate',
       'quotereplace',
-      'checklist-model'
+      'checklist-model', 'md.data.table'
     ])
     .config(['$routeProvider', function($routeProvider) {
       $routeProvider.when('/', {
