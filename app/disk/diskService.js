@@ -24,6 +24,9 @@
   //{USBMountPoint}:U盘挂载点
   var loadCalcUSBUserSpaceStr =
     "df -l |grep {USBMountPoint} |awk '{print $3}'";
+  //调用python 脚本文件进行硬盘复制
+  var diskCloneCMDStr =
+    "sudo python dumper.py -i test.dd -1 /tmp/1 -2 /tmp/2  -b 1 -t 0 ";
   angular.module('app')
     .service('diskService', ['$q', DiskService]);
 

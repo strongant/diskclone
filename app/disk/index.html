@@ -17,9 +17,9 @@
                 <md-radio-group ng-model="vm.disks">
                     <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
 
-                        <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1"
-                            md-colspan-xs="1" ng-class="tile.background">
-                            <md-radio-button value="{{tile.title}}" aria-label="{{tile.title}}" class="md-primary"> </md-radio-button>
+                        <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title,it.realSize)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}"
+                            md-colspan-sm="1" md-colspan-xs="1" ng-class="tile.background">
+                            <md-radio-button value="{{tile.realTitle}}" aria-label="{{tile.realTitle}}" class="md-primary"> </md-radio-button>
                             <md-icon md-svg-icon="{{tile.icon}}">
                             </md-icon>
                             <md-progress-linear md-mode="determinate" value="100"></md-progress-linear>
@@ -90,7 +90,7 @@
                         </md-select>
                     </md-input-container>
                     <md-input-container>
-                        <md-button class="md-raised md-primary">复制</md-button>
+                        <md-button class="md-raised md-primary" ng-click="vm.startCopy();">复制</md-button>
                     </md-input-container>
                 </section>
             </md-content>
@@ -129,9 +129,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- <md-grid-list flex layout-padding ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="5:4" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px"> -->
-
             </md-content>
 
             <!-- </body>

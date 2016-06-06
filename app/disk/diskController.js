@@ -25,11 +25,14 @@
     self.disks = [];
     self.usbArr = [];
     self.usbValArr = [];
-    self.hash = "";
-    self.blockSize = "";
+    self.hash = false;
+    self.blockSize = 8;
     //硬盘详细信息展示
     self.detailData = '点击左边硬盘显示详细信息';
     self.showTitle = '显示硬盘详情';
+    //需要发送调用python脚本的json对象
+    self.postData = {};
+    self.checkDiskSize = 0;
 
 
 
@@ -49,7 +52,8 @@
       unit: "G",
       capacityDiff: "0",
       realTitle: "",
-      currentDiskDetail: []
+      currentDiskDetail: [],
+      realSize: 0
     });
 
     //对加载到的硬盘进行格式化显示
@@ -117,8 +121,8 @@
             console.log(currentNode);
 
             if (currentNode.size) {
-              var diskNodeSize = currentNode.size.$t / 1000 / 1000 /
-                1000;
+              var diskNodeSize = currentNode.size.$t / 1024 / 1024 /
+                1024;
               it.capacity = diskNodeSize.toFixed(1);
             } else {
               it.capacity = 0;
@@ -222,6 +226,7 @@
 
           if (currentNode.size) {
             var diskNodeSize = currentNode.size.$t / 1024 / 1024 / 1024;
+            it.realSize = currentNode.size.$t;
             it.capacity = diskNodeSize.toFixed(2);
           } else {
             it.capacity = 0;
@@ -235,6 +240,9 @@
             // console.log('self.detailData:');
             // console.log(self.detailData);
             self.showTitle = it.title;
+            //硬盘操作默认选中第一个
+            self.disks.push(it.realTitle);
+            self.checkDiskSize = it.realSize;
           }
           // console.log('results:' + results.length);
           // console.log(results);
@@ -280,15 +288,75 @@
       });
       return results;
     }
-    self.showCurrentDiskInfo = function(data, title) {
+    self.showCurrentDiskInfo = function(data, title, size) {
       //console.log('showCurrentDiskInfo---->data:' + data);
       //self.detailData = data;
       self.detailData = data;
       self.showTitle = title;
       self.disks = [];
-      self.disks.push(title);
+      self.disks.push(realTitle);
+      self.checkDiskSize = size;
     };
     self.diskSizeType = [8, 16, 32];
+    self.startCopy = function() {
+
+      console.log('vm.disks:');
+      console.log(self.disks);
+      console.log('vm.hash:');
+      console.log(self.hash);
+      console.log('vm.blockSize:');
+      console.log(self.blockSize);
+      console.log('self.selected:');
+      console.log(self.selected);
+      if (self.disks.length == 0) {
+        self.showDialog('克隆提示', '请至少选择一个硬盘进行操作!', '操作提示', '返回选择');
+      }
+      if (self.blockSize === 0) {
+        self.showDialog('克隆提示', '请选择块大小!', '操作提示', '返回选择');
+      }
+      if (self.selected.length == 0) {
+        self.showDialog('克隆提示', '请至少选择一个USB进行硬盘克隆操作!', '操作提示', '返回选择');
+      }
+
+      //组织需要调用python文件的参数
+      var checkedDiskSize = self.checkDiskSize; //单位为字节
+      self.postData['sourDisk'] = {
+        "logicalName": self.disks[0],
+        "size": {
+          "value": checkedDiskSize,
+          "units": "bytes"
+        }
+      };
+      self.postData['targetFolder'] = self.selected;
+      self.postData['isHash'] = self.hash;
+      self.postData['blockSize'] = self.blockSize;
+      var postStr = JSON.stringify(self.postData);
+      console.log('postStr:');
+      console.log(self.postData);
+      console.log(postStr);
+
+      // $mdDialog.show(
+      //   $mdDialog.alert()
+      //   .clickOutsideToClose(true)
+      //   .title('克隆提示')
+      //   .textContent('确定执行克隆操作码?')
+      //   .ariaLabel('克隆提示')
+      //   .ok('确定')
+      // );
+    }
+    self.showDialog = function(title, content, label, oktip) {
+      $mdDialog.show(
+        $mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title(title)
+        .textContent(content)
+        .ariaLabel(label)
+        .ok(oktip)
+      );
+      return;
+    }
+
+
   }
 
 
