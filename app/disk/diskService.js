@@ -9,7 +9,10 @@
     shell
   } = remote;
   const fs = require('fs');
+  //异步加载硬盘信息
   const exec = require('child_process').exec;
+  //同步获取
+  const execSync = require("child_process").execSync;
   const parseString = require('xml2js').parseString;
   var parser = require('xml2json');
   var usbJsonArr = [];
@@ -17,20 +20,23 @@
   var cdromJsonArr = [];
   var diskData = {};
   //sudo df -hl |grep /dev/sda1  获取使用大小
-  var cmdStr = 'sudo lshw  -xml';
+  var loadDiskCmdStr = 'sudo lshw  -xml';
+  //{USBMountPoint}:U盘挂载点
+  var loadCalcUSBUserSpaceStr =
+    "df -l |grep {USBMountPoint} |awk '{print $3}'";
   angular.module('app')
     .service('diskService', ['$q', DiskService]);
 
 
   function DiskService($q) {
     return {
-      loadDiskList: loadDiskList
+      loadDiskList: loadDiskList,
+      calcUSBSpace: calcUSBSpace
     };
 
     function loadDiskList() {
-      console.log('service->loadDiskList ');
       var deferred = $q.defer();
-      exec(cmdStr, {
+      exec(loadDiskCmdStr, {
         explicitArray: false,
         ignoreAttrs: false
       }, function(err, stdout, stderr) {
@@ -47,9 +53,9 @@
           deferred.reject(e);
         }
         if (diskJson) {
-          console.log('diskJson.length:' + diskJson.length);
+
           for (var i = 0; i < diskJson.length; i++) {
-            console.log(i);
+
             if (diskJson[i].class === 'storage') {
 
               if (diskJson[i].node.id === 'cdrom') {
@@ -84,7 +90,17 @@
       });
       return deferred.promise;
     }
-    //通过指定的设备名称计算已经使用空间
+    //通过指定的USB设备名称计算已经使用空间
+    function calcUSBSpace(usbMountPoint) {
+      if (usbMountPoint) {
+        loadCalcUSBUserSpaceStr = loadCalcUSBUserSpaceStr.replace(
+          '{USBMountPoint}', usbMountPoint);
+        return execSync(loadCalcUSBUserSpaceStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        });
+      }
+    }
 
   }
 
