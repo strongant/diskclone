@@ -320,7 +320,7 @@
 
       //组织需要调用python文件的参数
       var checkedDiskSize = self.checkDiskSize; //单位为字节
-      self.postData['sourDisk'] = {
+      self.postData['sourceDisk'] = {
         "logicalName": self.disks[0],
         "size": {
           "value": checkedDiskSize,
@@ -334,6 +334,31 @@
       console.log('postStr:');
       console.log(self.postData);
       console.log(postStr);
+      try {
+        var resultStr = diskService.execDiskCopy(postStr);
+        if (resultStr && resultStr.trim() == 'error') {
+          self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查');
+        } else {
+          //显示克隆进度条
+
+          var copyResult = JSON.parse(resultStr);
+          if (copyResult.status === 'success') {
+            //进度条取消，提示克隆成功
+
+          } else {
+            //进度条取消，提示克隆成功
+
+            //克隆失败，请重试
+            self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '返回检查');
+          }
+
+        }
+      } catch (e) {
+
+      } finally {
+
+      }
+
 
       // $mdDialog.show(
       //   $mdDialog.alert()

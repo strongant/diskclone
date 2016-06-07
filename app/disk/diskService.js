@@ -26,7 +26,7 @@
     "df -l |grep {USBMountPoint} |awk '{print $3}'";
   //调用python 脚本文件进行硬盘复制
   var diskCloneCMDStr =
-    "sudo python dumper.py -i test.dd -1 /tmp/1 -2 /tmp/2  -b 1 -t 0 ";
+    "sudo python disk_copy.py '{execData}' ";
   angular.module('app')
     .service('diskService', ['$q', DiskService]);
 
@@ -34,7 +34,8 @@
   function DiskService($q) {
     return {
       loadDiskList: loadDiskList,
-      calcUSBSpace: calcUSBSpace
+      calcUSBSpace: calcUSBSpace,
+      execDiskCopy: execDiskCopy
     };
 
     function loadDiskList() {
@@ -99,6 +100,18 @@
         loadCalcUSBUserSpaceStr = loadCalcUSBUserSpaceStr.replace(
           '{USBMountPoint}', usbMountPoint);
         return execSync(loadCalcUSBUserSpaceStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        });
+      }
+    }
+
+    //调用python 脚本进行硬盘复制
+    function execDiskCopy(source) {
+      if (source) {
+        diskCloneCMDStr = diskCloneCMDStr.replace(
+          '{execData}', source);
+        return execSync(diskCloneCMDStr, {
           explicitArray: false,
           ignoreAttrs: false
         });

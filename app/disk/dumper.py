@@ -113,7 +113,7 @@ class Resource(object):
 
 def test2(source,targets=[],blocksize=8,sourcesize=0,type=FILE,hash=False):
 
-    if sourcesize==0 and type==FILE:return False
+    if sourcesize!=0 and type==FILE:return False
     starttime = time.clock()
     # 文件
     fileName=source
@@ -186,6 +186,7 @@ def test2(source,targets=[],blocksize=8,sourcesize=0,type=FILE,hash=False):
     print "Speed is:%sMB/s"%int((fs/1024/1024)/tc)
     return True
 
+
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], "hi:s:b:t:c:1:2:3:4:")
     input_file=""
@@ -225,3 +226,9 @@ if __name__ == '__main__':
             print "App Error."
     else:
         print u"请输入python dumper.py -h获取帮助."
+
+
+
+#
+# def getProcess():
+#     test2(src,dst,bs,sor,)
