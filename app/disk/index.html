@@ -19,7 +19,7 @@
 
                         <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title,it.realSize)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}"
                             md-colspan-sm="1" md-colspan-xs="1" ng-class="tile.background">
-                            <md-radio-button value="{{tile.realTitle}}" aria-label="{{tile.realTitle}}" class="md-primary"> </md-radio-button>
+                            <md-radio-button value="{{tile.realTitle}}" ng-disabled="tile.realTitle==vm.disks[0]" aria-label="{{tile.realTitle}}" class="md-primary"> </md-radio-button>
                             <md-icon md-svg-icon="{{tile.icon}}">
                             </md-icon>
                             <md-progress-linear md-mode="determinate" value="100"></md-progress-linear>

@@ -294,7 +294,7 @@
       self.detailData = data;
       self.showTitle = title;
       self.disks = [];
-      self.disks.push(realTitle);
+      self.disks.push(title);
       self.checkDiskSize = size;
     };
     self.diskSizeType = [8, 16, 32];
