@@ -12,16 +12,14 @@
   const processor = require('process');
   //异步加载硬盘信息
   const exec = require('child_process').exec;
+  const spawn = require('child_process').spawn;
   //同步获取
   const execSync = require("child_process").execSync;
   const parseString = require('xml2js').parseString;
   var parser = require('xml2json');
-  var usbJsonArr = [];
-  var hardDiskJsonArr = [];
-  var cdromJsonArr = [];
-  var diskData = {};
+
   //sudo df -hl |grep /dev/sda1  获取使用大小
-  var loadDiskCmdStr = 'sudo lshw  -xml';
+  var loadDiskCmdStr = 'sudo lshw  -json > /tmp/data.json';
   //{USBMountPoint}:U盘挂载点
   var loadCalcUSBUserSpaceStr =
     "df -l |grep {USBMountPoint} |awk '{print $3}'";
@@ -41,18 +39,35 @@
     };
 
     function loadDiskList() {
+      var usbJsonArr = [];
+      var hardDiskJsonArr = [];
+      var cdromJsonArr = [];
+      var diskData = {};
       var deferred = $q.defer();
       exec(loadDiskCmdStr, {
         explicitArray: false,
         ignoreAttrs: false
       }, function(err, stdout, stderr) {
         if (err) deferred.reject(err);
-        var jsonObj = parser.toJson(stdout);
+
+        var content = fs.readFileSync('/tmp/data.json', 'utf8');
+
+
+        //var jsonObj = parser.toJson(stdout);
+        //console.log(content);
+        //var jsonObj = content;
+        console.log('service----------------');
+        console.log('object:');
+        //console.log(content);
+        //console.log(jsonObj);
         var diskJson = null;
         try {
-          coreJson = JSON.parse(jsonObj).list.node;
-          if (coreJson.node && coreJson.node.id === 'core') {
-            diskJson = coreJson.node.node;
+          coreJson = JSON.parse(content);
+          if (coreJson.children) {
+            diskJson = coreJson.children[0].children;
+            console.log('diskjson:');
+            console.log(diskJson);
+            console.log(diskJson.length);
           }
         } catch (e) {
           console.log(e);
@@ -64,15 +79,15 @@
 
             if (diskJson[i].class === 'storage') {
 
-              if (diskJson[i].node.id === 'cdrom') {
-                cdromJsonArr.push(diskJson[i].node);
-              } else if (diskJson[i].node.id === 'disk' && diskJson[i]
-                .businfo !==
-                undefined && diskJson[i].configuration.setting.id ===
-                'driver') {
-                usbJsonArr.push(diskJson[i].node);
+              if (diskJson[i].children[0].id === 'cdrom') {
+                cdromJsonArr.push(diskJson[i].children);
+              } else if (diskJson[i].children[0].id === 'disk' &&
+                diskJson[i]
+                .configuration.driver ===
+                'usb-storage') {
+                usbJsonArr.push(diskJson[i].children);
               } else {
-                hardDiskJsonArr.push(diskJson[i].node);
+                hardDiskJsonArr.push(diskJson[i].children);
               }
 
             }

@@ -1,0 +1,575 @@
+{
+  "id" : "devbwh",
+  "class" : "system",
+  "claimed" : true,
+  "handle" : "DMI:0001",
+  "description" : "Project-Id-Version: lshwReport-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>POT-Creation-Date: 2009-10-08 14:02+0200PO-Revision-Date: 2012-10-07 14:34+0000Last-Translator: lumingzh <flywaterzh@gmail.com>Language-Team: Chinese (Simplified) <zh_CN@li.org>MIME-Version: 1.0Content-Type: text/plain; charset=UTF-8Content-Transfer-Encoding: 8bitX-Launchpad-Export-Date: 2015-02-19 11:31+0000X-Generator: Launchpad (build 17341)",
+  "product" : "VirtualBox ()",
+  "vendor" : "innotek GmbH",
+  "version" : "1.2",
+  "serial" : "0",
+  "width" : 64,
+  "configuration" : {
+    "family" : "Virtual Machine",
+    "uuid" : "31E327A9-7F83-4534-9675-54B8D10C8D65"
+  },
+  "capabilities" : {
+    "smbios-2.5" : "SMBIOS version 2.5",
+    "dmi-2.5" : "DMI version 2.5",
+    "vsyscall32" : "32位处理器"
+  },
+  "children" : [
+    {
+      "id" : "core",
+      "class" : "bus",
+      "claimed" : true,
+      "handle" : "DMI:0008",
+      "description" : "Motherboard",
+      "product" : "VirtualBox",
+      "vendor" : "Oracle Corporation",
+      "physid" : "0",
+      "version" : "1.2",
+      "serial" : "0",
+      "children" : [
+        {
+          "id" : "firmware",
+          "class" : "memory",
+          "claimed" : true,
+          "description" : "BIOS",
+          "vendor" : "innotek GmbH",
+          "physid" : "0",
+          "version" : "VirtualBox",
+          "date" : "12/01/2006",
+          "units" : "bytes",
+          "size" : 131072,
+          "capabilities" : {
+            "isa" : "ISA 总线",
+            "pci" : "PCI 总线",
+            "cdboot" : "从 CD-ROM/DVD 启动",
+            "bootselect" : "可选启动路径",
+            "int9keyboard" : "i8042 keyboard controller",
+            "int10video" : "INT10 CGA/Mono video",
+            "acpi" : "ACPI"
+          }
+        },
+        {
+          "id" : "memory",
+          "class" : "memory",
+          "claimed" : true,
+          "description" : "System memory",
+          "physid" : "1",
+          "units" : "bytes",
+          "size" : 9254137856
+        },
+        {
+          "id" : "cpu",
+          "class" : "processor",
+          "claimed" : true,
+          "product" : "Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz",
+          "vendor" : "Intel Corp.",
+          "physid" : "2",
+          "businfo" : "cpu@0",
+          "width" : 64,
+          "capabilities" : {
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "ht" : "HyperThreading",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "constant_tsc" : true,
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "nonstop_tsc" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "ssse3" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "rdrand" : true,
+            "hypervisor" : true,
+            "lahf_lm" : true,
+            "abm" : true
+          }
+        },
+        {
+          "id" : "pci",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "440FX - 82441FX PMC [Natoma]",
+          "vendor" : "Intel Corporation",
+          "physid" : "100",
+          "businfo" : "pci@0000:00:00.0",
+          "version" : "02",
+          "width" : 32,
+          "clock" : 33000000,
+          "children" : [
+            {
+              "id" : "isa",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:01.0",
+              "description" : "ISA bridge",
+              "product" : "82371SB PIIX3 ISA [Natoma/Triton II]",
+              "vendor" : "Intel Corporation",
+              "physid" : "1",
+              "businfo" : "pci@0000:00:01.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "isa" : true,
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "ide",
+              "class" : "storage",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:01.1",
+              "description" : "IDE interface",
+              "product" : "82371AB/EB/MB PIIX4 IDE",
+              "vendor" : "Intel Corporation",
+              "physid" : "1.1",
+              "businfo" : "pci@0000:00:01.1",
+              "version" : "01",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "ata_piix",
+                "latency" : "64"
+              },
+              "capabilities" : {
+                "ide" : true,
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "display",
+              "class" : "display",
+              "handle" : "PCI:0000:00:02.0",
+              "description" : "VGA compatible controller",
+              "product" : "VirtualBox Graphics Adapter",
+              "vendor" : "InnoTek Systemberatung GmbH",
+              "physid" : "2",
+              "businfo" : "pci@0000:00:02.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "vga_controller" : true,
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "network",
+              "class" : "network",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:03.0",
+              "description" : "Ethernet interface",
+              "product" : "79c970 [PCnet32 LANCE]",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "3",
+              "businfo" : "pci@0000:00:03.0",
+              "logicalname" : "eth0",
+              "version" : "40",
+              "serial" : "08:00:27:e5:23:73",
+              "units" : "bit/s",
+              "size" : 100000000,
+              "capacity" : 100000000,
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "autonegotiation" : "on",
+                "broadcast" : "yes",
+                "driver" : "pcnet32",
+                "driverversion" : "1.35",
+                "duplex" : "full",
+                "ip" : "10.0.5.77",
+                "latency" : "64",
+                "link" : "yes",
+                "maxlatency" : "255",
+                "mingnt" : "6",
+                "multicast" : "yes",
+                "port" : "MII",
+                "speed" : "100Mbit/s"
+              },
+              "capabilities" : {
+                "bus_master" : "bus mastering",
+                "ethernet" : true,
+                "physical" : "Physical interface",
+                "tp" : "twisted pair",
+                "mii" : "Media Independent Interface",
+                "10bt" : "10Mbit/s",
+                "10bt-fd" : "10Mbit/s (full duplex)",
+                "100bt" : "100Mbit/s",
+                "100bt-fd" : "100Mbit/s (full duplex)",
+                "autonegotiation" : "Auto-negotiation"
+              }
+            },
+            {
+              "id" : "generic",
+              "class" : "generic",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:04.0",
+              "description" : "System peripheral",
+              "product" : "VirtualBox Guest Service",
+              "vendor" : "InnoTek Systemberatung GmbH",
+              "physid" : "4",
+              "businfo" : "pci@0000:00:04.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "vboxguest",
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "multimedia",
+              "class" : "multimedia",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:05.0",
+              "description" : "Multimedia audio controller",
+              "product" : "82801AA AC'97 Audio Controller",
+              "vendor" : "Intel Corporation",
+              "physid" : "5",
+              "businfo" : "pci@0000:00:05.0",
+              "version" : "01",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "snd_intel8x0",
+                "latency" : "64"
+              },
+              "capabilities" : {
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "usb",
+              "class" : "bus",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:06.0",
+              "description" : "USB controller",
+              "product" : "KeyLargo/Intrepid USB",
+              "vendor" : "Apple Inc.",
+              "physid" : "6",
+              "businfo" : "pci@0000:00:06.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "ohci-pci",
+                "latency" : "64"
+              },
+              "capabilities" : {
+                "ohci" : "Open Host Controller Interface",
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "bridge",
+              "class" : "bridge",
+              "handle" : "PCI:0000:00:07.0",
+              "description" : "Bridge",
+              "product" : "82371AB/EB/MB PIIX4 ACPI",
+              "vendor" : "Intel Corporation",
+              "physid" : "7",
+              "businfo" : "pci@0000:00:07.0",
+              "version" : "08",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "bridge" : true,
+                "bus_master" : "bus mastering"
+              }
+            },
+            {
+              "id" : "storage",
+              "class" : "storage",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:0d.0",
+              "description" : "SATA controller",
+              "product" : "82801HM/HEM (ICH8M/ICH8M-E) SATA Controller [AHCI mode]",
+              "vendor" : "Intel Corporation",
+              "physid" : "d",
+              "businfo" : "pci@0000:00:0d.0",
+              "version" : "02",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "ahci",
+                "latency" : "64"
+              },
+              "capabilities" : {
+                "storage" : true,
+                "pm" : "Power Management",
+                "ahci_1.0" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            }
+          ]
+        },
+        {
+          "id" : "scsi:0",
+          "class" : "storage",
+          "claimed" : true,
+          "physid" : "3",
+          "logicalname" : "scsi1",
+          "capabilities" : {
+            "emulated" : "Emulated device"
+          },
+          "children" : [
+            {
+              "id" : "cdrom",
+              "class" : "disk",
+              "claimed" : true,
+              "handle" : "SCSI:01:00:00:00",
+              "description" : "DVD reader",
+              "physid" : "0.0.0",
+              "businfo" : "scsi@1:0.0.0",
+              "logicalname" : ["/dev/cdrom", "/dev/sr0", "/media/devbwh/VBOXADDITIONS_5.0.16_105871"],
+              "dev" : "11:0",
+              "configuration" : {
+                "mount.fstype" : "iso9660",
+                "mount.options" : "ro,nosuid,nodev,relatime,uid=1000,gid=1000,iocharset=utf8,mode=0400,dmode=0500",
+                "state" : "mounted",
+                "status" : "ready"
+              },
+              "capabilities" : {
+                "audio" : "Audio CD playback",
+                "dvd" : "DVD playback"
+              }
+            }
+          ]
+        },
+        {
+          "id" : "scsi:1",
+          "class" : "storage",
+          "claimed" : true,
+          "physid" : "4",
+          "logicalname" : "scsi2",
+          "capabilities" : {
+            "emulated" : "Emulated device"
+          },
+          "children" : [
+            {
+              "id" : "disk",
+              "class" : "disk",
+              "claimed" : true,
+              "handle" : "SCSI:02:00:00:00",
+              "description" : "ATA Disk",
+              "product" : "VBOX HARDDISK",
+              "physid" : "0.0.0",
+              "businfo" : "scsi@2:0.0.0",
+              "logicalname" : "/dev/sda",
+              "dev" : "8:0",
+              "version" : "1.0",
+              "serial" : "VBb99ff578-9a607570",
+              "units" : "bytes",
+              "size" : 111008350208,
+              "configuration" : {
+                "ansiversion" : "5",
+                "sectorsize" : "512",
+                "signature" : "0004d3f5"
+              },
+              "capabilities" : {
+                "partitioned" : "Partitioned disk",
+                "partitioned:dos" : "MS-DOS partition table"
+              },
+              "children" : [
+                {
+                  "id" : "volume:0",
+                  "class" : "volume",
+                  "claimed" : true,
+                  "description" : "EXT4 volume",
+                  "vendor" : "Linux",
+                  "physid" : "1",
+                  "businfo" : "scsi@2:0.0.0,1",
+                  "logicalname" : ["/dev/sda1", "/", "/var/lib/docker/aufs"],
+                  "dev" : "8:1",
+                  "version" : "1.0",
+                  "serial" : "0a38c540-ff05-4a92-9a40-fa96c5627306",
+                  "size" : 104342749184,
+                  "capacity" : 104342749184,
+                  "configuration" : {
+                    "created" : "2015-10-20 17:21:32",
+                    "filesystem" : "ext4",
+                    "lastmountpoint" : "/",
+                    "modified" : "2016-06-08 09:19:59",
+                    "mount.fstype" : "ext4",
+                    "mount.options" : "rw,relatime,errors=remount-ro,data=ordered",
+                    "mounted" : "2016-06-08 09:19:59",
+                    "state" : "mounted"
+                  },
+                  "capabilities" : {
+                    "primary" : "Primary partition",
+                    "bootable" : "Bootable partition (active)",
+                    "journaled" : true,
+                    "extended_attributes" : "Extended Attributes",
+                    "large_files" : "4GB+ files",
+                    "huge_files" : "16TB+ files",
+                    "dir_nlink" : "directories with 65000+ subdirs",
+                    "extents" : "extent-based allocation",
+                    "ext4" : true,
+                    "ext2" : "EXT2/EXT3",
+                    "initialized" : "initialized volume"
+                  }
+                },
+                {
+                  "id" : "volume:1",
+                  "class" : "volume",
+                  "claimed" : true,
+                  "description" : "Extended partition",
+                  "physid" : "2",
+                  "businfo" : "scsi@2:0.0.0,2",
+                  "logicalname" : "/dev/sda2",
+                  "dev" : "8:2",
+                  "size" : 6662652928,
+                  "capacity" : 6662652928,
+                  "capabilities" : {
+                    "primary" : "Primary partition",
+                    "extended" : "Extended partition",
+                    "partitioned" : "Partitioned disk",
+                    "partitioned:extended" : "Extended partition"
+                  },
+                  "children" : [
+                    {
+                      "id" : "logicalvolume",
+                      "class" : "volume",
+                      "claimed" : true,
+                      "description" : "Linux swap / Solaris partition",
+                      "physid" : "5",
+                      "logicalname" : "/dev/sda5",
+                      "dev" : "8:5",
+                      "capacity" : 6662651904,
+                      "capabilities" : {
+                        "nofs" : "No filesystem"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id" : "scsi:2",
+          "class" : "storage",
+          "claimed" : true,
+          "handle" : "SCSI:03",
+          "physid" : "5",
+          "businfo" : "usb@1:2",
+          "logicalname" : "scsi3",
+          "configuration" : {
+            "driver" : "usb-storage"
+          },
+          "capabilities" : {
+            "emulated" : "Emulated device",
+            "scsi-host" : "SCSI host adapter"
+          },
+          "children" : [
+            {
+              "id" : "disk",
+              "class" : "disk",
+              "claimed" : true,
+              "handle" : "SCSI:03:00:00:00",
+              "description" : "SCSI Disk",
+              "physid" : "0.0.0",
+              "businfo" : "scsi@3:0.0.0",
+              "logicalname" : "/dev/sdb",
+              "dev" : "8:16",
+              "units" : "bytes",
+              "size" : 31212699648,
+              "configuration" : {
+                "sectorsize" : "512",
+                "signature" : "00071324"
+              },
+              "capabilities" : {
+                "partitioned" : "Partitioned disk",
+                "partitioned:dos" : "MS-DOS partition table"
+              },
+              "children" : [
+                {
+                  "id" : "volume",
+                  "class" : "volume",
+                  "claimed" : true,
+                  "description" : "Windows NTFS volume",
+                  "physid" : "1",
+                  "businfo" : "scsi@3:0.0.0,1",
+                  "logicalname" : ["/dev/sdb1", "/media/devbwh/EEA13000613F"],
+                  "dev" : "8:17",
+                  "version" : "3.1",
+                  "serial" : "76c8-81ec",
+                  "size" : 31209815552,
+                  "capacity" : 31210864640,
+                  "configuration" : {
+                    "clustersize" : "4096",
+                    "created" : "2016-05-20 09:31:52",
+                    "filesystem" : "ntfs",
+                    "label" : "EEA13000613F",
+                    "mount.fstype" : "fuseblk",
+                    "mount.options" : "rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096",
+                    "state" : "mounted"
+                  },
+                  "capabilities" : {
+                    "primary" : "Primary partition",
+                    "ntfs" : "Windows NTFS",
+                    "initialized" : "initialized volume"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

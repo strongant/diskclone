@@ -42,6 +42,7 @@
     self.determinateValue2 = 30;
     self.showList = [];
     self.startCloneDisabled = false;
+    self.waitLoadUSB = false;
 
 
 
@@ -64,6 +65,8 @@
       currentDiskDetail: [],
       realSize: 0
     });
+
+
 
     //对加载到的硬盘进行格式化显示
     function buildGridModel(tileTmpl) {
@@ -141,8 +144,8 @@
               it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(
                 0);
             }
-            usbResults.push(it);
-            self.usbArr = usbResults;
+
+            self.usbArr.push(it);
           }
         }
         //不显示cdrom
@@ -379,7 +382,9 @@
             //进度条取消，提示克隆成功
             $interval.cancel(self.diskCloneOP);
             self.cloneActivated = false;
-            self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查');
+            self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查', function() {
+              self.startCloneDisabled = false;
+            });
           } else {
             var copyResult = JSON.parse(result);
             if (copyResult.status == 'success') {
@@ -387,14 +392,51 @@
               $interval.cancel(self.diskCloneOP);
               self.cloneActivated = false;
               self.showDialog('克隆提示', '克隆成功', '成功提示', '确认', function() {
-                location.reload();
+                self.waitLoadUSB = true;
+                var waitLoad = $interval(function() {
+                  // Increment the Determinate loader
+                  self.determinateValue += 1;
+                  if (self.determinateValue > 100) {
+                    self.determinateValue = 30;
+                  }
+                }, 20, 0, true);
+                //stop();
+                //location.reload();
+                loadUSBInfo({
+                  icon: "avatar:svg-",
+                  title: "/dev/",
+                  background: "red",
+                  capacity: "0",
+                  useCapacity: "0",
+                  unit: "G",
+                  capacityDiff: "0",
+                  realTitle: "",
+                  currentDiskDetail: [],
+                  realSize: 0
+                });
+                //初始化值
+                self.startCloneDisabled = false;
+                self.hash = false;
+                if (self.diskSizeType) {
+                  self.blockSize = self.diskSizeType[0];
+                }
+                self.selected = [];
+                self.waitLoadUSB = false;
+                //$interval.clear(waitLoad);
+
+
               });
 
             } else {
               $interval.cancel(self.diskCloneOP);
               self.cloneActivated = false;
+
               //克隆失败，请重试
-              self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '返回检查');
+              self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '返回检查',
+                function() {
+                  self.startCloneDisabled = false;
+                });
+
             }
 
           }
@@ -424,16 +466,98 @@
       // }, 2000);
       return;
     };
-    //控制元素是否元素禁用,true：禁用,false:取消禁用
-    self.isDisableElements = function(flag) {
-      if (flag) {
-        //禁用元素
+    //间隔一段事件获取USB的传输情况
+    // var queryUSBCacity = $interval(function() {
+    //     // Increment the Determinate loader
+    //     diskService.loadDiskList().then(function(disk) {
+    //         var usbData = disk['usbJsonData'];
+    //
+    //     });
+    // }, 1000, 0, true);
 
-      } else {
-        //恢复元素
 
-      }
-    };
+    //重新加载USB信息
+    function loadUSBInfo(tileTmpl) {
+      var it;
+      self.usbValArr = [];
+      self.usbArr = [];
+      diskService.loadDiskList().then(function(disk) {
+        if (!disk && !disk.list.node) {
+          console.log('this computer is no disk or load error');
+          return;
+        }
+        var usbData = disk['usbJsonData'];
+        console.log(usbData.length);
+
+
+
+        if (usbData) {
+          for (var i = 0; i < usbData.length; i++) {
+            var currentNode = usbData[i];
+            it = angular.extend({}, tileTmpl);
+            it.icon = it.icon + 'usb';
+            it.background = 'blue';
+            it.span = {
+              row: 1,
+              col: 1
+            };
+            //usb详情
+            it.diskData = currentNode;
+            it.span.row = it.span.col = 3;
+
+
+            if (typeof currentNode.logicalname == 'object') {
+
+              it.title = currentNode.logicalname[0];
+            } else if (typeof currentNode.logicalname == 'string') {
+              it.title = currentNode.logicalname;
+
+            }
+            it.realTitle = it.title;
+            //组装usb名称和logicalname
+            if (currentNode.node.logicalname) {
+              if (typeof currentNode.node.logicalname == 'object') {
+                var usbLogicalNameIndex = currentNode.node.logicalname.length -
+                  1;
+                var usbName = currentNode.node.logicalname[
+                  usbLogicalNameIndex];
+                it.realTitle = usbName;
+                //计算USB剩余的存储空间
+                var usbUserSpace = diskService.calcUSBSpace(usbName);
+                it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
+
+                var usbNameArr = usbName.split('/');
+                var usbNameEndIndex = usbNameArr.length - 1;
+                it.title = usbNameArr[usbNameEndIndex];
+                self.usbValArr.push(it.realTitle);
+
+              }
+            }
+            if (it.title.length > 15) {
+              it.title = it.title.substr(0, 10) + "...";
+            }
+            console.log('usb:');
+            console.log(currentNode);
+
+            if (currentNode.size) {
+              var diskNodeSize = currentNode.size.$t / 1024 / 1024 /
+                1024;
+              it.capacity = diskNodeSize.toFixed(1);
+            } else {
+              it.capacity = 0;
+            }
+            //计算使用比例
+            if (it.capacity && it.useCapacity && it.capacity > 0) {
+              it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(
+                0);
+            }
+            self.usbArr.push(it);
+          }
+        }
+
+      });
+    }
+
 
 
   }
