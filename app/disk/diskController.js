@@ -4,7 +4,7 @@
   angular.module('app')
     .controller('diskController', ['$scope', '$interval',
       'diskService', '$q',
-      '$mdDialog',
+      '$mdDialog', '$route',
       DiskController
     ]).config(function($mdIconProvider) {
       $mdIconProvider.iconSet("avatar",
@@ -15,7 +15,7 @@
 
 
   function DiskController($scope, $interval, diskService, $q,
-    $mdDialog) {
+    $mdDialog, $route) {
     var self = this,
       j = 0,
       counter = 0;
@@ -33,6 +33,15 @@
     //需要发送调用python脚本的json对象
     self.postData = {};
     self.checkDiskSize = 0;
+    //显示操作进度
+    self.diskCloneOP = null;
+    self.cloneTip = '克隆进行中,请稍后...';
+    self.mode = 'query';
+    self.cloneActivated = false;
+    self.determinateValue = 30;
+    self.determinateValue2 = 30;
+    self.showList = [];
+    self.startCloneDisabled = false;
 
 
 
@@ -137,8 +146,8 @@
           }
         }
         //不显示cdrom
-        //var expectUsbArr = cdromData.concat(hardDiskData);
-        var expectUsbArr = hardDiskData;
+        var expectUsbArr = cdromData.concat(hardDiskData);
+        //var expectUsbArr = hardDiskData;
 
         //构造除过cdrom和usb的存储设备信息
         // for (var t = 0; t < 1; t++) {
@@ -255,12 +264,15 @@
         //usb全选和不选操作
         self.selected = [];
         self.toggle = function(item, list) {
-          var idx = list.indexOf(item);
-          if (idx > -1) {
-            list.splice(idx, 1);
-          } else {
-            list.push(item);
+          if (!self.startCloneDisabled) {
+            var idx = list.indexOf(item);
+            if (idx > -1) {
+              list.splice(idx, 1);
+            } else {
+              list.push(item);
+            }
           }
+
         };
 
         self.exists = function(item, list) {
@@ -277,12 +289,16 @@
         };
 
         self.toggleAll = function() {
-          if (self.selected.length === self.usbValArr.length) {
-            self.selected = [];
-          } else if (self.selected.length === 0 || self.selected.length >
-            0) {
-            self.selected = self.usbValArr.slice(0);
+          //当在进行克隆操作时点击无效
+          if (!self.startCloneDisabled) {
+            if (self.selected.length === self.usbValArr.length) {
+              self.selected = [];
+            } else if (self.selected.length === 0 || self.selected.length >
+              0) {
+              self.selected = self.usbValArr.slice(0);
+            }
           }
+
         };
 
       });
@@ -291,12 +307,15 @@
     self.showCurrentDiskInfo = function(data, title, size) {
       //console.log('showCurrentDiskInfo---->data:' + data);
       //self.detailData = data;
-      self.detailData = data;
-      self.showTitle = title;
-      self.disks = [];
-      self.disks.push(title);
-      self.checkDiskSize = size;
+      if (!self.startCloneDisabled) {
+        self.detailData = data;
+        self.showTitle = title;
+        self.disks = [];
+        self.disks.push(title);
+        self.checkDiskSize = size;
+      }
     };
+
     self.diskSizeType = [8, 16, 32];
     self.startCopy = function() {
 
@@ -310,18 +329,22 @@
       console.log(self.selected);
       if (self.disks.length == 0) {
         self.showDialog('克隆提示', '请至少选择一个硬盘进行操作!', '操作提示', '返回选择');
+        return;
       }
       if (self.blockSize === 0) {
         self.showDialog('克隆提示', '请选择块大小!', '操作提示', '返回选择');
+        return;
       }
       if (self.selected.length == 0) {
         self.showDialog('克隆提示', '请至少选择一个USB进行硬盘克隆操作!', '操作提示', '返回选择');
+        return;
       }
 
       //组织需要调用python文件的参数
       var checkedDiskSize = self.checkDiskSize; //单位为字节
       self.postData['sourceDisk'] = {
         "logicalName": self.disks[0],
+        // "logicalName": '/dev/sr0',
         "size": {
           "value": checkedDiskSize,
           "units": "bytes"
@@ -330,46 +353,61 @@
       self.postData['targetFolder'] = self.selected;
       self.postData['isHash'] = self.hash;
       self.postData['blockSize'] = self.blockSize;
-      var postStr = JSON.stringify(self.postData);
+      self.postStr = JSON.stringify(self.postData);
       console.log('postStr:');
       console.log(self.postData);
-      console.log(postStr);
+      console.log(self.postStr);
       try {
-        var resultStr = diskService.execDiskCopy(postStr);
-        if (resultStr && resultStr.trim() == 'error') {
-          self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查');
-        } else {
-          //显示克隆进度条
+        //var resultStr = diskService.execDiskCopy(postStr);
+        //显示克隆进度条
+        self.diskCloneOP = $interval(function() {
+          self.determinateValue += 1;
+          self.determinateValue2 += 1.5;
+          if (self.determinateValue > 100) self.determinateValue = 10;
+          if (self.determinateValue2 > 100) self.determinateValue2 =
+            10;
+        }, 100, 0, true);
+        self.cloneActivated = true;
+        self.startCloneDisabled = true;
 
-          var copyResult = JSON.parse(resultStr);
-          if (copyResult.status === 'success') {
+        diskService.execDiskCopy(self.postStr).then(function(result) {
+          console.log('-------------------克隆完成后result:');
+          console.log(result);
+
+
+          if (result && result.trim() == 'error') {
             //进度条取消，提示克隆成功
-
+            $interval.cancel(self.diskCloneOP);
+            self.cloneActivated = false;
+            self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查');
           } else {
-            //进度条取消，提示克隆成功
+            var copyResult = JSON.parse(result);
+            if (copyResult.status == 'success') {
+              //进度条取消，提示克隆成功
+              $interval.cancel(self.diskCloneOP);
+              self.cloneActivated = false;
+              self.showDialog('克隆提示', '克隆成功', '成功提示', '确认', function() {
+                location.reload();
+              });
 
-            //克隆失败，请重试
-            self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '返回检查');
+            } else {
+              $interval.cancel(self.diskCloneOP);
+              self.cloneActivated = false;
+              //克隆失败，请重试
+              self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '返回检查');
+            }
+
           }
+        });
 
-        }
       } catch (e) {
-
-      } finally {
-
+        console.log(e);
+        self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '请联系管理人员');
+        $interval.cancel(self.diskCloneOP);
+        self.cloneActivated = false;
       }
-
-
-      // $mdDialog.show(
-      //   $mdDialog.alert()
-      //   .clickOutsideToClose(true)
-      //   .title('克隆提示')
-      //   .textContent('确定执行克隆操作码?')
-      //   .ariaLabel('克隆提示')
-      //   .ok('确定')
-      // );
-    }
-    self.showDialog = function(title, content, label, oktip) {
+    };
+    self.showDialog = function(title, content, label, oktip, callback) {
       $mdDialog.show(
         $mdDialog.alert()
         .clickOutsideToClose(true)
@@ -377,9 +415,25 @@
         .textContent(content)
         .ariaLabel(label)
         .ok(oktip)
-      );
+      ).finally(
+        function() {
+          callback();
+        });
+      // setTimeout(function() {
+      //   location.reload();
+      // }, 2000);
       return;
-    }
+    };
+    //控制元素是否元素禁用,true：禁用,false:取消禁用
+    self.isDisableElements = function(flag) {
+      if (flag) {
+        //禁用元素
+
+      } else {
+        //恢复元素
+
+      }
+    };
 
 
   }

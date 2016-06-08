@@ -9,6 +9,7 @@
     shell
   } = remote;
   const fs = require('fs');
+  const processor = require('process');
   //异步加载硬盘信息
   const exec = require('child_process').exec;
   //同步获取
@@ -26,7 +27,8 @@
     "df -l |grep {USBMountPoint} |awk '{print $3}'";
   //调用python 脚本文件进行硬盘复制
   var diskCloneCMDStr =
-    "sudo python disk_copy.py '{execData}' ";
+    "sudo python  " + processor.cwd() +
+    "/app/disk/disk_copy.py '{execData}' ";
   angular.module('app')
     .service('diskService', ['$q', DiskService]);
 
@@ -108,14 +110,26 @@
 
     //调用python 脚本进行硬盘复制
     function execDiskCopy(source) {
-      if (source) {
-        diskCloneCMDStr = diskCloneCMDStr.replace(
-          '{execData}', source);
-        return execSync(diskCloneCMDStr, {
-          explicitArray: false,
-          ignoreAttrs: false
-        });
-      }
+      var deferred = $q.defer();
+      // if (source) {
+      //   diskCloneCMDStr = diskCloneCMDStr.replace(
+      //     '{execData}', source);
+      //   exec(diskCloneCMDStr, {
+      //     explicitArray: false,
+      //     ignoreAttrs: false
+      //   }, function(err, stdout, stderr) {
+      //     if (err) deferred.reject(err);
+      //     deferred.resolve(stdout);
+      //   });
+      // } else {
+      //   console.log('source参数不能为空...');
+      //   deferred.reject('source参数不能为空...');
+      // }
+      setTimeout(function() {
+        deferred.resolve('{"status":"success"}');
+      }, 5000);
+
+      return deferred.promise;
     }
 
   }

@@ -4,11 +4,11 @@
     min-width: 100%;
 }
 .box1 {
-    max-height: 50%;
+    max-height: 45%;
     flex: 1 1 50%;
 }
 .box2 {
-    height: 15%;
+    height: 20%;
 }
 .box3 {
     height: 25%;
@@ -18,10 +18,9 @@
 span {
     text-align: center;
 }
-body{
-  overflow-y: hidden;
+body {
+    overflow-y: hidden;
 }
-
 .gridListdemoDynamicTiles md-icon {
     width: 50%;
     height: 30%;
@@ -31,9 +30,8 @@ body{
     -moz-border-radius: 50%;
     border-radius: 50%;
 }
-
-.custom_md-content{
-  overflow-y:hidden;
+.custom_md-content {
+    overflow-y: hidden;
 }
 .gridListdemoDynamicTiles md-grid-list {
     margin: 8px;
@@ -103,19 +101,20 @@ body{
     cursor: pointer;
     border: 3px solid yellow;
 }
-.gridListdemoDynamicTiles md-grid-tile p{
-  margin-top: -1%;
-}
-.customer_disk{
-  border: 3px solid yellow;
-}
 .gridListdemoDynamicTiles md-grid-tile:after {
     border: 2px solid blue;
+}
+.gridListdemoDynamicTiles md-grid-tile p {
+    margin-top: -1%;
+}
+.customer_disk {
+    border: 3px solid yellow;
 }
 
 /*.box2 md-content section{
   padding-left: 10px;
 }*/
+
 .box2 md-input-container {
     margin-left: 15%;
 }
@@ -136,13 +135,13 @@ body{
 .box3 .blue {
     background: #84ffff;
 }
-.box3 md-grid-list md-progress-linear .md-container{
-  margin-left: 20%;
-  width: 65%;
+.box3 md-grid-list md-progress-linear .md-container {
+    margin-left: 20%;
+    width: 65%;
 }
-.box3 md-grid-list md-icon{
-  margin-left: 30%;
+.box3 md-grid-list md-icon {
+    margin-left: 30%;
 }
-.box3 md-grid-list md-checkbox,p{
-  margin-top: 4%;
+.box3 md-grid-list md-checkbox, p {
+    margin-top: 4%;
 }
