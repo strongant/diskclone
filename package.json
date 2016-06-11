@@ -12,6 +12,7 @@
   ],
   "dependencies": {
     "asar": "^0.11.0",
+    "child-process-promise": "^2.0.2",
     "electron-prebuilt": "^1.1.0",
     "fs-jetpack": "^0.9.1",
     "gulp-minify-css": "^1.2.4",
