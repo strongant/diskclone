@@ -85,10 +85,11 @@
                             for (var i = 0; i < diskJson.length; i++) {
                                 if (diskJson[i].logicalname && diskJson[i].node) {
                                     var subNode = diskJson[i];
+
                                     if (subNode.node.$.id === 'cdrom') {
                                         cdromJsonArr.push(subNode);
-                                    } else if (subNode.node.$ !== undefined && subNode.node.$.id !== undefined &&
-                                        subNode.node.$.id === 'disk' && subNode.configuration !== undefined && subNode.configuration.setting !== undefined && subNode.configuration.setting.$ !== undefined && subNode.configuration.setting.$.id !== undefined && subNode.businfo !== undefined && subNode.configuration.setting.$.id === 'driver') {
+                                    } else if (
+                                        subNode.businfo && subNode.businfo.indexOf('usb') >= 0) {
                                         usbJsonArr.push(subNode);
                                     } else {
                                         hardDiskJsonArr.push(subNode);
