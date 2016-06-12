@@ -499,8 +499,8 @@
 
           if (currentNode.node && currentNode.node.size && currentNode.node.size
             ._) {
-            var diskNodeSize = currentNode.node.size._ / 1024 / 1024 /
-              1024;
+            var diskNodeSize = currentNode.node.size._ / 1000 / 1000 /
+              1000;
             it.capacity = diskNodeSize.toFixed(1);
           } else {
             it.capacity = 0;

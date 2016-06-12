@@ -118,7 +118,6 @@
       if (usbMountPoint) {
         var tempCalcStr = loadCalcUSBUserSpaceStr.replace(
           '{USBMountPoint}', usbMountPoint);
-
         return execSync(tempCalcStr, {
           explicitArray: false,
           ignoreAttrs: false
