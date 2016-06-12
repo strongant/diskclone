@@ -4,7 +4,8 @@
   "description": "copy disk's files to usb",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
+    "start": "electron .",
+    "build": "electron-packager . DiskClone --platform linux --arch x32  --out=dist/ --overwrite --icon=app/assets/img/appledisk.png",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

@@ -4,6 +4,8 @@ const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
+
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
