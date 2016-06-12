@@ -178,10 +178,11 @@
               it.title = it.title.substr(0, 10) + "...";
             }
 
-            if (currentNode.node.size) {
+            if (currentNode.node && currentNode.node.size) {
               var diskNodeSize = currentNode.node.size._ / 1024 / 1024 /
                 1024;
               it.realSize = currentNode.node.size._;
+
               it.capacity = diskNodeSize.toFixed(2);
             } else {
               it.capacity = 0;

@@ -17,7 +17,7 @@
                 <md-radio-group ng-model="vm.disks">
                     <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="8px">
 
-                        <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title,it.realSize)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}"
+                        <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title,tile.realSize)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}"
                             md-colspan-sm="1" md-colspan-xs="1" ng-class="tile.background" ng-disabled="vm.startCloneDisabled">
                             <md-radio-button value="{{tile.realTitle}}"  aria-label="{{tile.realTitle}}"
                             class="md-primary" ng-disabled="vm.startCloneDisabled"> </md-radio-button>
