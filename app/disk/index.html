@@ -111,7 +111,7 @@
             <md-content layout="column" flex layout-padding>
                 <div layout="column" layout-wrap="">
                     <div layout="column">
-                        <div>
+                        <div ng-if='vm.usbArr.length>0'>
                             <md-checkbox ng-if="!vm.activated" aria-label="全选" ng-checked="vm.isChecked()"
                             md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()"
                             aria-label="全选"

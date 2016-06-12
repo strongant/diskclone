@@ -210,7 +210,13 @@
         //}
         //加载完毕取消等待消息
         $interval.cancel(stop);
+        //检测USB设备
+        if (self.usbArr.length <= 0) {
+          self.showDialog('克隆提示', '请插入USB设备进行操作!', '操作提示', '返回操作');
+        }
         self.activated = false;
+
+
         //usb全选和不选操作
         self.selected = [];
         self.toggle = function(item, list) {
