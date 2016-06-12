@@ -346,7 +346,8 @@
               self.cloneActivated = false;
               self.showDialog('克隆提示', '克隆成功', '成功提示', '确认', function() {
                 self.waitLoadUSB = true;
-                var waitLoad = $interval(function() {
+                self.determinateValue += 20;
+                self.waitLoadProgress = $interval(function() {
                   // Increment the Determinate loader
                   self.determinateValue += 1;
                   if (self.determinateValue > 100) {
@@ -375,7 +376,7 @@
                 }
                 self.selected = [];
                 self.waitLoadUSB = false;
-                //$interval.clear(waitLoad);
+                $interval.clear(self.waitLoadProgress);
 
 
               });
@@ -479,7 +480,8 @@
               console.log('usbName:');
               console.log(usbName);
               //计算USB剩余的存储空间
-              var usbUserSpace = diskService.calcUSBSpace(usbName);
+
+              var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
               it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
 
               var usbNameArr = usbName.split('/');
