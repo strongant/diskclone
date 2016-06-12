@@ -27,6 +27,7 @@
   "author": "strongant",
   "license": "MIK",
   "devDependencies": {
+    "electron-packager": "^7.0.3",
     "gulp": "^3.9.1"
   }
 }

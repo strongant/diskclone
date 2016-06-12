@@ -129,9 +129,9 @@
     function execDiskCopy(source) {
       var deferred = $q.defer();
       // if (source) {
-      //   diskCloneCMDStr = diskCloneCMDStr.replace(
+      //   var tempCMDStr = diskCloneCMDStr.replace(
       //     '{execData}', source);
-      //   exec(diskCloneCMDStr, {
+      //   exec(tempCMDStr, {
       //     explicitArray: false,
       //     ignoreAttrs: false
       //   }, function(err, stdout, stderr) {
