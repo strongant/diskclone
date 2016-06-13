@@ -18,7 +18,7 @@ class DiskCopy:
             dst = config['targetFolder']
             isHash = config['isHash']
             blockSize = config['blockSize']
-            test2(srcPath, dst, blockSize, srcSize, type=DISK, hash=isHash)
+            test2(srcPath, dst, blockSize, srcSize, srctype=DISK, hash=isHash)
             result['status'] = "success"
         except Exception, e:
             print e

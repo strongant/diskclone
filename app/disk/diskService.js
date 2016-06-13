@@ -43,7 +43,8 @@
     return {
       loadDiskList: loadDiskList,
       calcUSBSpace: calcUSBSpace,
-      execDiskCopy: execDiskCopy
+      execDiskCopy: execDiskCopy,
+      readCopyDiskInfo: readCopyDiskInfo
     };
 
     function loadDiskList() {
@@ -128,25 +129,44 @@
     //调用python 脚本进行硬盘复制
     function execDiskCopy(source) {
       var deferred = $q.defer();
-      // if (source) {
-      //   var tempCMDStr = diskCloneCMDStr.replace(
-      //     '{execData}', source);
-      //   exec(tempCMDStr, {
-      //     explicitArray: false,
-      //     ignoreAttrs: false
-      //   }, function(err, stdout, stderr) {
-      //     if (err) deferred.reject(err);
-      //     deferred.resolve(stdout);
-      //   });
-      // } else {
-      //   console.log('source参数不能为空...');
-      //   deferred.reject('source参数不能为空...');
-      // }
-      setTimeout(function() {
-        deferred.resolve('{"status":"success"}');
-      }, 5000);
+      if (source) {
+        var tempCMDStr = diskCloneCMDStr.replace(
+          '{execData}', source);
+        exec(tempCMDStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        }, function(err, stdout, stderr) {
+          if (err) deferred.reject(err);
+          deferred.resolve(stdout);
+        });
+      } else {
+        console.log('source参数不能为空...');
+        deferred.reject('source参数不能为空...');
+      }
+      // setTimeout(function() {
+      //   deferred.resolve('{"status":"success"}');
+      // }, 5000);
 
       return deferred.promise;
+    }
+
+    //读取当前拷贝数据信息
+    function readCopyDiskInfo(path) {
+      try {
+        if (path && fs.existsSync(path)) {
+          var data = fs.readFileSync('/tmp/p', 'utf-8');
+          if (data) {
+            var result = {};
+            var tempData = data.split(',');
+            result['copySize'] = tempData[0].toString();
+            result['buffer'] = tempData[1].toString();
+            return result;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   }
 })();

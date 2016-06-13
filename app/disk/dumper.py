@@ -1,45 +1,24 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import os,time
 import threading
 import time
 import sys,getopt
 
+
 rlock = threading.RLock()
 curPosition = 0
+totalBlks=0
 
 FILE=0
 DISK=1
 
-class Writer(threading.Thread):
-    def __init__(self,data,num,p):
-        self.data=data
-        self.num=num
-        self.path=p
-        super(Writer,self).__init__()
-    def run(self):
-
-            while len(self.path)==0:
-                print "Thread %s waitting for path"%self.num
-            rlock.acquire()
-            path=self.path.pop()
-            rlock.release()
-            print "The %s block of data is processing.."%self.num
-            f=open(os.path.join(path,"out","%s.dd"%self.num),'wb')
-            # print "data size:%s"%len(self.data)
-            f.write(self.data)
-            f.flush()
-            f.close()
-            rlock.acquire()
-            path=self.path.append(path)
-            rlock.release()
-            print "The %s block of data done" % self.num
-
-        # self.join()
 
 class WriterDisk(threading.Thread):
-    def __init__(self,data,p):
+    def __init__(self,data,p,res):
         self.datalist=data
         self.path=p
+        self.res=res
         # self.setDaemon(True)
         super(WriterDisk,self).__init__()
     def run(self):
@@ -47,7 +26,6 @@ class WriterDisk(threading.Thread):
                 try:
                     rlock.acquire()
                     ds=self.datalist.pop()
-
                     rlock.release()
                     data=ds[0]
                     num=ds[1]
@@ -58,6 +36,9 @@ class WriterDisk(threading.Thread):
                     f.write(data)
                     f.flush()
                     f.close()
+                    rlock.acquire()
+                    self.res.did()
+                    rlock.release()
                     # print "The %s block of data done" % num
                 except IndexError:
                    rlock.release()
@@ -70,89 +51,81 @@ class WriterDisk(threading.Thread):
         # self.join()
 
 
-class Reader(threading.Thread):
-    def __init__(self, res):
-        self.res = res
-        super(Reader, self).__init__()
-    def run(self):
-        global curPosition
-        fstream = open(self.res.fileName, 'r')
-        while True:
-            #锁定共享资源
-            rlock.acquire()
-            startPosition = curPosition
-            curPosition = endPosition = (startPosition + self.res.blockSize) if (startPosition + self.res.blockSize) < self.res.fileSize else self.res.fileSize
-            #释放共享资源
-            rlock.release()
-            if startPosition == self.res.fileSize:
-                break
-            elif startPosition != 0:
-                fstream.seek(startPosition)
-                fstream.readline()
-            pos = fstream.tell()
-            while pos < endPosition:
-                line = fstream.readline()
-                #处理line
-                #print(line.strip())
-                pos = fstream.tell()
-                print pos
-        fstream.close()
-
 class Resource(object):
-    def __init__(self, fileName):
-        self.fileName = fileName
+    def __init__(self, totalBlock,blockSize):
+        self.totalBlock = totalBlock
         #分块大小
-        self.blockSize = 8*1024*1024
-        self.getFileSize()
+        self.blockSize = blockSize
+        self.curBlock=0
+        self.starttime=time.clock()
+        f=open("/tmp/p",'wb')
+        f.write("0,0")
+        f.close()
     #计算文件大小
-    def getFileSize(self):
-        fstream = open(self.fileName, 'r')
-        fstream.seek(0, os.SEEK_END)
-        self.fileSize = fstream.tell()
-        fstream.close()
+    def getProcess(self):
+        # print self.curBlock // self.totalBlock
 
-def test2(source,targets=[],blocksize=8,sourcesize=0,type=FILE,hash=False):
+        tc = (time.clock() - self.starttime)
+        return [self.curBlock/self.totalBlock*100,int(self.curBlock*self.blockSize/tc/1024/1024)]
 
-    if sourcesize!=0 and type==FILE:return False
+    def did(self):
+        # print "one more"
+        # print self.curBlock,self.totalBlock
+        if self.curBlock<self.totalBlock:
+            self.curBlock+=1;
+            tc = (time.clock() - self.starttime)
+            f=open("/tmp/p",'wb')
+            f.write("%s,%s"%((self.curBlock / self.totalBlock)*100,int(self.curBlock*self.blockSize/tc/1024/1024)))
+            f.close()
+
+
+def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False):
+
+
+    if sourcesize!=0 and srctype==FILE:return False
+    # print source,targets,blocksize,sourcesize,srctype,hash
     starttime = time.clock()
     # 文件
-    fileName=source
+    # fileName=source
     if os.path.exists(source):
         fileName=source
     else:
-        print "SourceFile not found."
+        # print "SourceFile not found."
         return False
     # path = ['d:', 'e:','g:','i:']
     # path=['/Volumes/extData',u'/Volumes/新加卷','/Volumes/TOSHIBA']
     path=[]
     for item in targets:
         if not os.path.exists(item):
-            print "Path not found."
+            # print "Path not found."
             return False
         path.append(item)
     f = open(fileName, 'rb')
     bs = int(blocksize)* 1024*1024
     fs=0
-    if type==FILE:
+    if srctype==FILE:
         f.seek(0, os.SEEK_END)
         fs = f.tell()
-    elif type==DISK:
+    elif srctype==DISK:
         fs=int(sourcesize)
-    print "Source Size is : %sMB"%(fs/1024/1024)
+    # print "Source Size is : %sMB"%(fs/1024/1024)
+
     bc = fs / bs
+    #totalBlks=bc
     # print bc
+    res = Resource(bc,bs)
     rc = 0
     datas = []
     threads = []
     f.seek(0)
     for p in path:
-        rdr = WriterDisk(datas, p)
+        rdr = WriterDisk(datas, p,res)
         threads.append(rdr)
         # rdr.setDaemon(True)
         rdr.start()
     # print ""
     run=True
-    print "Now is :%s"%time.clock()
+    # print "Now is :%s"%time.clock()
     while True:
         if rc == bc :
             rlock.acquire()
@@ -167,23 +140,27 @@ def test2(source,targets=[],blocksize=8,sourcesize=0,type=FILE,hash=False):
                 else:
                     for t in threads:
                         if not t.is_alive():
-                            print t
+                            # print t
                             threads.pop(threads.index(t))
             break
         else:
          if len(datas)<=8:
+
             rlock.acquire()
+            #r=res.getProcess()
+            # print "Process: %s%%,Speed: %s MB/s "%(r[0],r[1])
             datas.append([f.read(bs),rc])
             rc += 1
             rlock.release()
 
     while True:
+
         if len(threads) == 0: break
-    tc=(time.clock() - starttime)
-    print "Now is :%s"%time.clock()
+    #tc=(time.clock() - starttime)
+    # print "Now is :%s"%time.clock()
     # print (time.clock() - starttime)
-    print "%s files been created. Using %s Seconds"%(bc,tc)
-    print "Speed is:%sMB/s"%int((fs/1024/1024)/tc)
+    # print "%s files been created. Using %s Seconds"%(bc,tc)
+    # print "Speed is:%sMB/s"%int((fs/1024/1024)/tc)
     return True
 
 

@@ -317,19 +317,30 @@
         //var resultStr = diskService.execDiskCopy(postStr);
         //显示克隆进度条
         self.diskCloneOP = $interval(function() {
+          self.determinateValue = 0;
+          self.determinateValue2 = 0;
           //这里需要复制真实的硬盘大小(countSize)/传输速度(determinateValue2)/和当前已经传输的总大小
           //每次获取时记住已经传输的总大小-上一次的传输总大小为determinateValue
           //var currentSize = 1000; //currentSize表示读取的已经传输的大小
           //self.determinateValue +=currentSize-self.determinateValue(表示需要叠加的大小)
           //self.determinateValue2 +=传输速度即可
-          self.determinateValue += 1;
-          self.determinateValue2 += 1.5;
-          var countSize = 1000;
-          if (self.determinateValue >= countSize) self.determinateValue =
-            10;
-          if (self.determinateValue2 >= countSize) self.determinateValue2 =
-            10;
-        }, 100, 0, true); //100:表示每隔100毫秒去获取，如果换成真实大小,可以30s获取一次
+          //读取已经克隆的大小
+          var readDiskInfo = diskService.readCopyDiskInfo('/tmp/p');
+          console.log('diskService--readDiskInfo:');
+          console.log(readDiskInfo);
+          if (readDiskInfo) {
+            self.determinateValue = readDiskInfo.copySize;
+
+            self.determinateValue2 = readDiskInfo.buffer;
+
+            var countSize = 100;
+            console.log(self.checkDiskSize);
+            if (self.determinateValue >= countSize) self.determinateValue =
+              self.determinateValue;
+            if (self.determinateValue2 >= countSize) self.determinateValue2 =
+              readDiskInfo.buffer;
+          }
+        }, 1000, 0, true); //1000:表示每隔1000毫秒去获取
         self.cloneActivated = true;
         self.startCloneDisabled = true;
 

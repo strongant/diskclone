@@ -4,12 +4,19 @@ const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
+var iconPath = __dirname + '/app/assets/img/appledisk.png';
+// const appIcon = new Tray(
+//   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png');
+// var iconPath =
+//   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png';
+//let appIcon = new Tray('/Users/somebody/images/icon.png');
 
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
-    height: 1000
+    height: 1000,
+    icon: iconPath
   });
 
   mainWindow.loadURL(`file://${__dirname}/app/index.html`);

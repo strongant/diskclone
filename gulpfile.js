@@ -4,7 +4,7 @@ var gulp = require('gulp'),
   electron = require('electron-prebuilt');
 // 创建 gulp 任务
 gulp.task('run', function() {
-  childProcess.spawn(electron, ['--debug=5858', './app/main.js'], {
+  childProcess.spawn(electron, ['--debug=5858', './main.js'], {
     stdio: 'inherit'
   });
 });
