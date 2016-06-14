@@ -13,6 +13,7 @@
   //异步加载硬盘信息
   const exec = require('child_process').exec;
   var spawn = require('child-process-promise').spawn;
+  //var logger = require('../diskLogger').logger('disk');
   //const spawn = require('child_process').spawnSync;
   //const spawn = require('child_process').spawn;
 
@@ -64,6 +65,7 @@
       var child = exec(execDiskCMDStr);
       child.stderr.on('data', function(data) {
         console.log('stdout: ' + data);
+        //logger.info("stdout:" + data);
         deferred.reject(data);
       });
       child.on('close', function(code) {
@@ -108,6 +110,7 @@
           }
         } catch (e) {
           console.log(e);
+          //logger.debug("err:" + e.toString());
           deferred.reject(e);
         }
       });
@@ -164,6 +167,7 @@
           }
         }
       } catch (e) {
+        //logger.debug("err:" + e.toString());
         console.log(e);
       }
 

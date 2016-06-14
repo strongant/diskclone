@@ -10,20 +10,25 @@ class DiskCopy:
     def copy(self):
         result = {}
         try:
+            ##sn
+            #product
+            #目标盘剩余空间大小
+            #
             config = json.loads(self.source)
-            print config['sourceDisk']['logicalName']
             src = config['sourceDisk']
             srcPath = config['sourceDisk']['logicalName']
             srcSize = config['sourceDisk']['size']['value']
             dst = config['targetFolder']
             isHash = config['isHash']
             blockSize = config['blockSize']
-            test2(srcPath, dst, blockSize, srcSize, srctype=DISK, hash=isHash)
-            result['status'] = "success"
+
+            if test2(srcPath, dst, blockSize, srcSize, srctype=DISK, hash=isHash):
+                result['status'] = "success"
+            else:
+                result['status'] = "error"
         except Exception, e:
-            print e
-            result['status'] = "error"
-        return result
+            result['status'] = "error:"+str(e)
+        return json.dumps(result)
 
 
 if __name__ == '__main__':

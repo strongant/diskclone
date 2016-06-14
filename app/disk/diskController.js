@@ -63,7 +63,8 @@
       capacityDiff: "0",
       realTitle: "",
       currentDiskDetail: [],
-      realSize: 0
+      realSize: 0,
+      usbUesSpace: 0
     });
 
 
@@ -78,8 +79,7 @@
           console.log('this computer is no disk or load error');
           return;
         }
-        console.log('all disk:');
-        console.log(disk);
+
         var cdromData = disk['cdromJsonData'];
         var hardDiskData = disk['hardDiskJsonData'];
         var usbData = disk['usbJsonData'];
@@ -88,7 +88,7 @@
         //不显示cdrom
         var expectUsbArr = cdromData.concat(hardDiskData);
         //var expectUsbArr = hardDiskData;
-        console.log(hardDiskData);
+
 
         //构造除过cdrom和usb的存储设备信息
         // for (var t = 0; t < 1; t++) {
@@ -107,8 +107,7 @@
             it.span.row = it.span.col = 3;
             //组装表格中需要显示的数据
             var detailData = {};
-            console.log('hardDisk  currentNode:');
-            console.log(currentNode);
+
             if (currentNode.description) {
               detailData['description'] = currentNode.description;
             }
@@ -116,24 +115,40 @@
               detailData['description'] = currentNode.node.description;
             }
             if (currentNode.product) {
+              it.product = currentNode.product;
               detailData['product'] = currentNode.product;
+            }
+            if (currentNode.node && currentNode.node.product) {
+              it.product = currentNode.node.product;
+              detailData['product'] = currentNode.node.product;
+            }
+            if (currentNode.serial) {
+              it.serial = currentNode.serial;
+              detailData['serial'] = currentNode.serial;
+            }
+            if (currentNode.node && currentNode.node.serial) {
+              it.serial = currentNode.node.serial;
+              detailData['serial'] = currentNode.node.serial;
             }
             if (currentNode.node.logicalname) {
               detailData['logicalname'] = currentNode.node.logicalname;
             }
 
-            if (currentNode.serial) {
-              detailData['serial'] = currentNode.serial;
-            }
             if (currentNode.node.size && currentNode.node.size._) {
               detailData['size'] = currentNode.node.size._;
             }
             if (currentNode.node.node && currentNode.node.node.length > 0) {
               for (var cnode = 0; cnode < currentNode.node.node.length; cnode++) {
                 var subNode = currentNode.node.node[cnode];
-                detailData[subNode.$.id + '.serial'] = subNode.serial;
-                detailData[subNode.$.id + '.logicalname'] = subNode.logicalname;
-                detailData[subNode.$.id + '.size'] = subNode.size._;
+                if (subNode.serial) {
+                  detailData[subNode.$.id + '.serial'] = subNode.serial;
+                }
+                if (subNode.logicalname) {
+                  detailData[subNode.$.id + '.logicalname'] = subNode.logicalname;
+                }
+                if (subNode.size && subNode.size._) {
+                  detailData[subNode.$.id + '.size'] = subNode.size._;
+                }
                 if (subNode.configuration && subNode.configuration.setting) {
                   for (var subi = 0; subi < subNode.configuration.setting
                     .length; subi++) {
@@ -274,15 +289,6 @@
 
     self.diskSizeType = [8, 16, 32];
     self.startCopy = function() {
-
-      console.log('vm.disks:');
-      console.log(self.disks);
-      console.log('vm.hash:');
-      console.log(self.hash);
-      console.log('vm.blockSize:');
-      console.log(self.blockSize);
-      console.log('self.selected:');
-      console.log(self.selected);
       if (self.disks.length == 0) {
         self.showDialog('克隆提示', '请至少选择一个硬盘进行操作!', '操作提示', '返回选择');
         return;
@@ -295,35 +301,58 @@
         self.showDialog('克隆提示', '请至少选择一个USB进行硬盘克隆操作!', '操作提示', '返回选择');
         return;
       }
+      var checkedDiskSerial = checkedDiskProduct = '';
+      //组装选中的USB设备可用空间
+      var checkUSBCapacityArr = [],
+        targetPaths = [];
+      for (var i = 0; i < self.usbArr.length; i++) {
+        var useCapacity = self.usbArr[i];
+        if (self.usbValArr.indexOf(useCapacity.realTitle) > -1) {
+          var usbCapacityObj = {};
+          targetPaths.push(useCapacity.realTitle);
+          usbCapacityObj['name'] = useCapacity.realTitle;
+          usbCapacityObj['capacity'] = useCapacity.usbUesSpace;
+          checkUSBCapacityArr.push(usbCapacityObj);
+        }
+      }
+      for (var i = 0; i < self.tiles.length; i++) {
+        var tempDisk = self.tiles[i];
+        if (self.disks.indexOf(tempDisk.realTitle) > -1) {
+          if (tempDisk.serial) {
+            checkedDiskSerial = tempDisk.serial;
+          }
+          if (tempDisk.product) {
+            checkedDiskProduct = tempDisk.product;
+          }
+          break;
+        }
+      }
 
-      //组织需要调用python文件的参数
       var checkedDiskSize = self.checkDiskSize; //单位为字节
+
       self.postData['sourceDisk'] = {
+        "serial": checkedDiskSerial,
+        "product": checkedDiskProduct,
         "logicalName": self.disks[0],
-        // "logicalName": '/dev/sr0',
         "size": {
           "value": checkedDiskSize,
           "units": "bytes"
         }
       };
+      self.postData['targetCapacityArr'] = checkUSBCapacityArr;
       self.postData['targetFolder'] = self.selected;
       self.postData['isHash'] = self.hash;
       self.postData['blockSize'] = self.blockSize;
+
       self.postStr = JSON.stringify(self.postData);
       console.log('postStr:');
-      console.log(self.postData);
       console.log(self.postStr);
-      try {
+      /*try {
         //var resultStr = diskService.execDiskCopy(postStr);
         //显示克隆进度条
         self.diskCloneOP = $interval(function() {
           self.determinateValue = 0;
           self.determinateValue2 = 0;
-          //这里需要复制真实的硬盘大小(countSize)/传输速度(determinateValue2)/和当前已经传输的总大小
-          //每次获取时记住已经传输的总大小-上一次的传输总大小为determinateValue
-          //var currentSize = 1000; //currentSize表示读取的已经传输的大小
-          //self.determinateValue +=currentSize-self.determinateValue(表示需要叠加的大小)
-          //self.determinateValue2 +=传输速度即可
           //读取已经克隆的大小
           var readDiskInfo = diskService.readCopyDiskInfo('/tmp/p');
           console.log('diskService--readDiskInfo:');
@@ -331,8 +360,12 @@
           if (readDiskInfo) {
             self.determinateValue = readDiskInfo.copySize;
 
-            self.determinateValue2 = readDiskInfo.buffer;
+            self.determinateValue2 = self.determinateValue2 +
+              readDiskInfo.buffer;
+            var tempTip = self.cloneTip;
 
+            self.cloneTip = '克隆进行中,当前速度:' + readDiskInfo.buffer +
+              'MB/S,请稍后...';
             var countSize = 100;
             console.log(self.checkDiskSize);
             if (self.determinateValue >= countSize) self.determinateValue =
@@ -419,7 +452,7 @@
         self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '请联系管理人员');
         $interval.cancel(self.diskCloneOP);
         self.cloneActivated = false;
-      }
+      }*/
     };
     self.showDialog = function(title, content, label, oktip, callback) {
       $mdDialog.show(
@@ -487,21 +520,23 @@
           }
           it.realTitle = it.title;
           //组装usb名称和logicalname
-          if (currentNode.node.node && currentNode.node.node && currentNode.node
+          if (currentNode.node.node && currentNode.node.node &&
+            currentNode.node
             .node.logicalname) {
             if (typeof currentNode.node.node.logicalname == 'object') {
-              var usbLogicalNameIndex = currentNode.node.node.logicalname.length -
+              var usbLogicalNameIndex = currentNode.node.node.logicalname
+                .length -
                 1;
               var usbName = currentNode.node.node.logicalname[
                 usbLogicalNameIndex];
               it.realTitle = usbName;
-              console.log('usbName:');
-              console.log(usbName);
               //计算USB剩余的存储空间
 
               var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
-              it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
-
+              if (usbUserSpace) {
+                it.usbUesSpace = parseInt(usbUserSpace.toString());
+                it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
+              }
               var usbNameArr = usbName.split('/');
               var usbNameEndIndex = usbNameArr.length - 1;
               it.title = usbNameArr[usbNameEndIndex];
@@ -512,10 +547,9 @@
           if (it.title.length > 15) {
             it.title = it.title.substr(0, 10) + "...";
           }
-          console.log('usb:');
-          console.log(currentNode);
 
-          if (currentNode.node && currentNode.node.size && currentNode.node.size
+          if (currentNode.node && currentNode.node.size && currentNode.node
+            .size
             ._) {
             var diskNodeSize = currentNode.node.size._ / 1000 / 1000 /
               1000;

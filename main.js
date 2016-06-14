@@ -4,7 +4,7 @@ const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
-var iconPath = __dirname + '/app/assets/img/appledisk.png';
+let iconPath = __dirname + '/app/assets/img/appledisk.png';
 // const appIcon = new Tray(
 //   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png');
 // var iconPath =

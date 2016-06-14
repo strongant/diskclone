@@ -101,6 +101,7 @@
                     value="{{vm.determinateValue}}"
 
                     md-buffer-value="{{vm.determinateValue2}}" ></md-progress-linear>
+
                 </div>
 
             </md-content>
@@ -118,6 +119,7 @@
                             ng-disabled="vm.startCloneDisabled">
                                 <span ng-if="vm.isChecked()">不选</span><span ng-if="!vm.isChecked()">全选</span>
                             </md-checkbox>
+
                             <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
                                 <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                             </div>
