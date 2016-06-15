@@ -21,8 +21,11 @@ class DiskCopy:
             dst = config['targetFolder']
             isHash = config['isHash']
             blockSize = config['blockSize']
+            #需要克隆到的目标USB详细信息包括{"name":"/media/devbwh/EEA130005F48",
+            #"capacity":1410316,"serial":"5468-6efe","procut":"xxx"}
+            targetCapacityArr = config['targetCapacityArr']
 
-            if test2(srcPath, dst, blockSize, srcSize, srctype=DISK, hash=isHash):
+            if test2(srcPath, dst, blockSize, srcSize, srctype=DISK, hash=isHash,targetdetail=targetCapacityArr):
                 result['status'] = "success"
             else:
                 result['status'] = "error"

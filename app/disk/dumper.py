@@ -79,7 +79,7 @@ class Resource(object):
             f.close()
 
 
-def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False):
+def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False,targetdetail=[]):
 
 
     if sourcesize!=0 and srctype==FILE:return False

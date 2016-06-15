@@ -19,8 +19,7 @@
 
                         <md-grid-tile ng-repeat="tile in vm.tiles" ng-click="vm.showCurrentDiskInfo(tile.currentDiskDetail,tile.title,tile.realSize)" ng-class="{true: 'customer_disk'}[tile.title==vm.disks[0]]" style="clear:both;" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}"
                             md-colspan-sm="1" md-colspan-xs="1" ng-class="tile.background" ng-disabled="vm.startCloneDisabled">
-                            <md-radio-button value="{{tile.realTitle}}"  aria-label="{{tile.realTitle}}"
-                            class="md-primary" ng-disabled="vm.startCloneDisabled"> </md-radio-button>
+                            <md-radio-button value="{{tile.realTitle}}" aria-label="{{tile.realTitle}}" class="md-primary" ng-disabled="vm.startCloneDisabled"> </md-radio-button>
                             <md-icon md-svg-icon="{{tile.icon}}">
                             </md-icon>
                             <md-progress-linear md-mode="determinate" value="100"></md-progress-linear>
@@ -94,13 +93,9 @@
                         <md-button class="md-raised md-primary" ng-click="vm.startCopy();" ng-disabled="vm.startCloneDisabled">复制</md-button>
                     </md-input-container>
                 </section>
-                <div  ng-if="!vm.activated && vm.diskCloneOP && vm.cloneActivated" layout='column' layout-padding>
+                <div ng-if="!vm.activated && vm.diskCloneOP && vm.cloneActivated" layout='column' layout-padding>
                     <span><b>{{vm.cloneTip}}</b></span>
-                    <md-progress-linear class="md-warn" md-mode="buffer"
-
-                    value="{{vm.determinateValue}}"
-
-                    md-buffer-value="{{vm.determinateValue2}}" ></md-progress-linear>
+                    <md-progress-linear class="md-warn" md-mode="buffer" value="{{vm.determinateValue}}" md-buffer-value="{{vm.determinateValue2}}"></md-progress-linear>
 
                 </div>
 
@@ -110,30 +105,26 @@
         <div class="box3" class="container-fluid">
 
             <md-content layout="column" flex layout-padding>
+                <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
+                    <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
+                </div>
                 <div layout="column" layout-wrap="">
                     <div layout="column">
                         <div ng-if='vm.usbArr.length>0'>
-                            <md-checkbox ng-if="!vm.activated" aria-label="全选" ng-checked="vm.isChecked()"
-                            md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()"
-                            aria-label="全选"
-                            ng-disabled="vm.startCloneDisabled">
+                            <md-checkbox ng-if="!vm.activated" aria-label="全选" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()" aria-label="全选" ng-disabled="vm.startCloneDisabled">
                                 <span ng-if="vm.isChecked()">不选</span><span ng-if="!vm.isChecked()">全选</span>
                             </md-checkbox>
 
-                            <div ng-if="vm.activated" layout="row" layout-sm="column" layout-align="space-around">
-                                <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
-                            </div>
+
                             <!-- <div ng-if="vm.waitLoadUSB" layout="row" layout-sm="column" layout-align="space-around">
                                 <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}"></md-progress-circular>
                             </div> -->
                             <!-- layout="row"   layout-wrap flex -->
                             <div class="row">
                                 <md-grid-list flex ng-cloak md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
-                                    <md-grid-tile layout="row" ng-repeat="tile in vm.usbArr" class="blue"
-                                     md-colspan-gt-sm="4" md-rowspan-gt-sm="1">
+                                    <md-grid-tile layout="row" ng-repeat="tile in vm.usbArr" class="blue" md-colspan-gt-sm="4" md-rowspan-gt-sm="1">
 
-                                        <md-checkbox ng-checked="vm.exists(tile.realTitle, vm.selected)"
-                                        ng-click="vm.toggle(tile.realTitle, vm.selected)" ng-disabled="vm.startCloneDisabled">
+                                        <md-checkbox ng-checked="vm.exists(tile.realTitle, vm.selected)" ng-click="vm.toggle(tile.realTitle, vm.selected)" ng-disabled="vm.startCloneDisabled">
                                             <md-tooltip>
                                                 {{ tile.realTitle }}
                                             </md-tooltip>
@@ -151,17 +142,6 @@
                     </div>
                 </div>
             </md-content>
-
-            <!-- </body>
-            <!box3
-            选中硬盘:
-            {{vm.disks}}
-            <br>
-            哈希:
-            {{vm.hash}}
-            <br>
-            块大小：
-            {{vm.blockSize}} -->
         </div>
     </div>
 

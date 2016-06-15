@@ -305,6 +305,8 @@
       //组装选中的USB设备可用空间
       var checkUSBCapacityArr = [],
         targetPaths = [];
+      console.log('self.usbArr:');
+      console.log(self.usbArr);
       for (var i = 0; i < self.usbArr.length; i++) {
         var useCapacity = self.usbArr[i];
         if (self.usbValArr.indexOf(useCapacity.realTitle) > -1) {
@@ -312,6 +314,12 @@
           targetPaths.push(useCapacity.realTitle);
           usbCapacityObj['name'] = useCapacity.realTitle;
           usbCapacityObj['capacity'] = useCapacity.usbUesSpace;
+          if (useCapacity.serial) {
+            usbCapacityObj['serial'] = useCapacity.serial;
+          }
+          if (useCapacity.product) {
+            usbCapacityObj['product'] = useCapacity.product;
+          }
           checkUSBCapacityArr.push(usbCapacityObj);
         }
       }
@@ -502,6 +510,8 @@
       if (usbData) {
         for (var i = 0; i < usbData.length; i++) {
           var currentNode = usbData[i];
+          console.log('currentNode:');
+          console.log(currentNode);
           it = angular.extend({}, tileTmpl);
           it.icon = it.icon + 'usb';
           it.background = 'blue';
@@ -519,6 +529,20 @@
             it.title = currentNode.node.node.logicalname;
           }
           it.realTitle = it.title;
+          if (currentNode.serial) {
+            it.serial = currentNode.serial;
+          }
+          if (currentNode.node && currentNode.node.node && currentNode.node.node
+            .serial) {
+            it.serial = currentNode.node.node.serial;
+          }
+          if (currentNode.product) {
+            it.product = currentNode.product;
+          }
+          if (currentNode.node && currentNode.node.node && currentNode.node.node
+            .product) {
+            it.product = currentNode.node.node.product;
+          }
           //组装usb名称和logicalname
           if (currentNode.node.node && currentNode.node.node &&
             currentNode.node
