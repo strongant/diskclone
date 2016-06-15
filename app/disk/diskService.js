@@ -25,7 +25,7 @@
 
   //sudo df -hl |grep /dev/sda1  获取使用大小
   var loadDiskCmdStr = 'sudo';
-  var txtPath = 'data.xml';
+  var txtPath = '/tmp/data.xml';
   var execDiskCMDStr =
     'sudo lshw -class disk -class storage -class volume -xml > ' + txtPath;
   //{USBMountPoint}:U盘挂载点
@@ -33,8 +33,8 @@
     "df -l |grep {USBMountPoint} |awk '{print $3}'";
   //调用python 脚本文件进行硬盘复制
   var diskCloneCMDStr =
-    "sudo python  " + processor.cwd() +
-    "/app/disk/disk_copy.py '{execData}' ";
+    "sudo python  /var/opt/dcpy/disk_copy.py '{execData}' ";
+
 
   angular.module('app')
     .service('diskService', ['$q', DiskService]);
@@ -45,7 +45,8 @@
       loadDiskList: loadDiskList,
       calcUSBSpace: calcUSBSpace,
       execDiskCopy: execDiskCopy,
-      readCopyDiskInfo: readCopyDiskInfo
+      readCopyDiskInfo: readCopyDiskInfo,
+      deleteFileExists: deleteFileExists
     };
 
     function loadDiskList() {
@@ -170,7 +171,13 @@
         //logger.debug("err:" + e.toString());
         console.log(e);
       }
-
     }
+    //判断文件是否存在，如果存在将其删除
+    function deleteFileExists(path) {
+      if (path && fs.existsSync(path)) {
+        fs.unlinkSync(path);
+      }
+    }
+
   }
 })();

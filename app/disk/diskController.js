@@ -86,8 +86,8 @@
         //显示USB信息
         buildUSBData(usbData, tileTmpl);
         //不显示cdrom
-        var expectUsbArr = cdromData.concat(hardDiskData);
-        //var expectUsbArr = hardDiskData;
+        //var expectUsbArr = cdromData.concat(hardDiskData);
+        var expectUsbArr = hardDiskData;
 
 
         //构造除过cdrom和usb的存储设备信息
@@ -355,20 +355,21 @@
       self.postStr = JSON.stringify(self.postData);
       console.log('postStr:');
       console.log(self.postStr);
-      /*try {
-        //var resultStr = diskService.execDiskCopy(postStr);
+      try {
+        var cloneOut = '/tmp/p';
+        diskService.deleteFileExists(cloneOut);
+        var resultStr = diskService.execDiskCopy(self.postStr);
         //显示克隆进度条
         self.diskCloneOP = $interval(function() {
           self.determinateValue = 0;
           self.determinateValue2 = 0;
           //读取已经克隆的大小
-          var readDiskInfo = diskService.readCopyDiskInfo('/tmp/p');
+          var readDiskInfo = diskService.readCopyDiskInfo(cloneOut);
           console.log('diskService--readDiskInfo:');
           console.log(readDiskInfo);
           if (readDiskInfo) {
             self.determinateValue = readDiskInfo.copySize;
-
-            self.determinateValue2 = self.determinateValue2 +
+            self.determinateValue2 = self.determinateValue +
               readDiskInfo.buffer;
             var tempTip = self.cloneTip;
 
@@ -460,7 +461,7 @@
         self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '请联系管理人员');
         $interval.cancel(self.diskCloneOP);
         self.cloneActivated = false;
-      }*/
+      }
     };
     self.showDialog = function(title, content, label, oktip, callback) {
       $mdDialog.show(
@@ -490,7 +491,7 @@
 
 
     //重新加载USB信息
-    function loadUSBInfo(tileTmpl) {
+    function loadUSBInfo(tileTmpl) { //callback
       var it;
       self.usbValArr = [];
       self.usbArr = [];
@@ -503,6 +504,7 @@
         console.log(usbData.length);
         //组装usb信息
         buildUSBData(usbData, tileTmpl);
+        //callback();
       });
     }
 
