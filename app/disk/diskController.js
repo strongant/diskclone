@@ -288,6 +288,30 @@
     };
 
     self.diskSizeType = [8, 16, 32];
+
+    //显示克隆状态信息
+    self.showProress = function(readDiskInfo) {
+      self.cloneActivated = true;
+      self.startCloneDisabled = true;
+      if (readDiskInfo) {
+        self.determinateValue = readDiskInfo.process;
+        self.determinateValue2 = self.determinateValue +
+          readDiskInfo.buffer;
+        var tempTip = self.cloneTip;
+
+        self.cloneTip = '克隆进行中,当前速度:' + readDiskInfo.speed +
+          'MB/S,请稍后...';
+        var countSize = 100;
+        console.log(self.checkDiskSize);
+        if (self.determinateValue >= countSize) self.determinateValue =
+          self.determinateValue;
+        /*  if (self.determinateValue2 >= countSize) self.determinateValue2 =
+            readDiskInfo.speed;*/
+
+      }
+    };
+
+
     self.startCopy = function() {
       if (self.disks.length == 0) {
         self.showDialog('克隆提示', '请至少选择一个硬盘进行操作!', '操作提示', '返回选择');
@@ -355,42 +379,32 @@
       self.postStr = JSON.stringify(self.postData);
       console.log('postStr:');
       console.log(self.postStr);
+
       try {
-        var cloneOut = '/tmp/p';
-        diskService.deleteFileExists(cloneOut);
-        var resultStr = diskService.execDiskCopy(self.postStr);
+        //var cloneOut = '/tmp/p';
+        //diskService.deleteFileExists(cloneOut);
         //显示克隆进度条
         self.diskCloneOP = $interval(function() {
           self.determinateValue = 0;
           self.determinateValue2 = 0;
           //读取已经克隆的大小
-          var readDiskInfo = diskService.readCopyDiskInfo(cloneOut);
-          console.log('diskService--readDiskInfo:');
-          console.log(readDiskInfo);
+          var readDiskInfo = diskService.readCopyDiskInfo();
           if (readDiskInfo) {
-            self.determinateValue = readDiskInfo.copySize;
-            self.determinateValue2 = self.determinateValue +
-              readDiskInfo.buffer;
-            var tempTip = self.cloneTip;
-
-            self.cloneTip = '克隆进行中,当前速度:' + readDiskInfo.buffer +
-              'MB/S,请稍后...';
-            var countSize = 100;
-            console.log(self.checkDiskSize);
-            if (self.determinateValue >= countSize) self.determinateValue =
-              self.determinateValue;
-            if (self.determinateValue2 >= countSize) self.determinateValue2 =
-              readDiskInfo.buffer;
+            console.log('diskService--readDiskInfo:');
+            var readDiskInfoStr = readDiskInfo.toString();
+            console.log(readDiskInfoStr);
+            var readDiskInfoJson = JSON.parse(readDiskInfoStr);
+            self.showProress(readDiskInfoJson);
           }
+
         }, 1000, 0, true); //1000:表示每隔1000毫秒去获取
-        self.cloneActivated = true;
-        self.startCloneDisabled = true;
+
+
 
         diskService.execDiskCopy(self.postStr).then(function(result) {
           console.log('-------------------克隆完成后result:');
+          console.log("result:");
           console.log(result);
-
-
           if (result && result.trim() == 'error') {
             //进度条取消，提示克隆成功
             $interval.cancel(self.diskCloneOP);
@@ -406,11 +420,12 @@
               self.cloneActivated = false;
               self.showDialog('克隆提示', '克隆成功', '成功提示', '确认', function() {
                 self.waitLoadUSB = true;
+                self.determinateValue = 0;
                 self.determinateValue += 20;
                 self.waitLoadProgress = $interval(function() {
                   // Increment the Determinate loader
                   self.determinateValue += 1;
-                  if (self.determinateValue > 100) {
+                  if (self.determinateValue >= 100) {
                     self.determinateValue = 30;
                   }
                 }, 100, 0, true);
@@ -505,6 +520,8 @@
         //组装usb信息
         buildUSBData(usbData, tileTmpl);
         //callback();
+        console.log("self.usbArr:");
+        console.log(self.usbArr);
       });
     }
 
@@ -566,8 +583,8 @@
               var usbNameArr = usbName.split('/');
               var usbNameEndIndex = usbNameArr.length - 1;
               it.title = usbNameArr[usbNameEndIndex];
-              self.usbValArr.push(it.realTitle);
 
+              self.usbValArr.push(it.realTitle);
             }
           }
           if (it.title.length > 15) {
@@ -589,6 +606,7 @@
               0);
           }
 
+          //var usbProduct = diskService.getUSBProduct();
           self.usbArr.push(it);
         }
       }

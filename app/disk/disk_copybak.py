@@ -2,6 +2,7 @@
 from __future__ import division
 import os,time
 import threading
+import time
 import sys,getopt
 import math
 import json
@@ -63,16 +64,15 @@ class Resource(object):
         #分块大小
         self.blockSize = blockSize
         self.curBlock=0
-        self.starttime=time.time()
-        #self.f=open("/tmp/p",'w')
-        #self.f.write("0,0")
-        self.lt=time.time()
-        #f.close()
+        self.starttime=time.clock()
+        f=open("/tmp/p",'wb')
+        f.write("0,0")
+        f.close()
     #计算文件大小
     def getProcess(self):
         # print self.curBlock // self.totalBlock
 
-        tc = (time.time() - self.starttime)
+        tc = (time.clock() - self.starttime)
         return [self.curBlock/self.totalBlock*100,int(self.curBlock*self.blockSize/tc/1024/1024)]
 
     def did(self):
@@ -80,21 +80,10 @@ class Resource(object):
         # print self.curBlock,self.totalBlock
         if self.curBlock<=self.totalBlock:
             self.curBlock+=1;
-
-            #f=open("/tmp/p",'wb')
-            if self.lt+1<time.time():
-             tc = (time.time() - self.starttime)
-             data={}
-             data['process']=(self.curBlock / self.totalBlock)*100
-             data['speed']=int(self.curBlock*self.blockSize/tc/1024/1024)
-             #data="%s,%s\n"%(,)
-             results=json.dumps(data)
-             #os.system("echo '%s' > /tmp/p"%data)
-             os.system('printf "%s" | nc 127.0.0.1 9000'%results)
-#self.f.seek(0)
-            #print "%s,%s\n"%((self.curBlock / self.totalBlock)*100,int(self.curBlock*self.blockSize/tc/1024/1024))
-             self.lt=time.time()
-            #f.close()
+            tc = (time.clock() - self.starttime)
+            f=open("/tmp/p",'wb')
+            f.write("%s,%s"%((self.curBlock / self.totalBlock)*100,int(self.curBlock*self.blockSize/tc/1024/1024)))
+            f.close()
 
 
 def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False,targetdetail=[]):
@@ -102,7 +91,7 @@ def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False,tar
 
     if sourcesize!=0 and srctype==FILE:return False
     # print source,targets,blocksize,sourcesize,srctype,hash
-    starttime = time.time()
+    starttime = time.clock()
     # 文件
     # fileName=source
     if os.path.exists(source):
@@ -162,15 +151,13 @@ def test2(source,targets=[],blocksize=8,sourcesize=0,srctype=FILE,hash=False,tar
                             threads.pop(threads.index(t))
             break
         else:
-             if len(datas)<=16:
+             if len(datas)<=8:
 
                 rlock.acquire()
 
                 datas.append([f.read(bs),rc])
                 rc += 1
                 rlock.release()
-             else:
-                time.sleep(0.4*len(threads))
 
     while True:
         if len(threads) == 0: break
@@ -207,18 +194,10 @@ class DiskCopy:
         return json.dumps(result)
 
 if __name__ == '__main__':
-    if not os.path.exists("/tmp/8fish.lock"):
-      if len(sys.argv) <= 1:
-          print 'error'
-          sys.exit(0)
-      os.system('echo 1>/tmp/8fish.lock')
-      source = sys.argv[1]
-      #f=open('/tmp/result','w')
-      #f.write("begin:%s"%time.time())
-      #f.flush()
-      c = DiskCopy(source)
-      r = c.copy()
-      print r
-      #f.write("end:%s"%time.time())
-      #f.close()
-      os.system('rm /tmp/8fish.lock')
+    if len(sys.argv) <= 1:
+        print 'error'
+        sys.exit(0)
+    source = sys.argv[1]
+    c = DiskCopy(source)
+    r = c.copy()
+    print r

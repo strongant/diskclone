@@ -8,8 +8,12 @@
     dialog,
     shell
   } = remote;
+  const request = require('request');
   const fs = require('fs');
   const processor = require('process');
+
+  //const chatServer = net.createServer()；
+
   //异步加载硬盘信息
   const exec = require('child_process').exec;
   var spawn = require('child-process-promise').spawn;
@@ -28,12 +32,20 @@
   var txtPath = '/tmp/data.xml';
   var execDiskCMDStr =
     'sudo lshw -class disk -class storage -class volume -xml > ' + txtPath;
+
   //{USBMountPoint}:U盘挂载点
   var loadCalcUSBUserSpaceStr =
-    "df -l |grep {USBMountPoint} |awk '{print $3}'";
+    "sudo df -l |grep {USBMountPoint} |awk '{print $3}'";
+  //获取USB设备的product,#usbNo#USB设备挂载编号
+  var getUSBProductStr = "sudo  cat #usbNo# |grep Product |awk '{print $2}'";
+  //获取USB设备的序列号
+  var getUSBSerialNOStr =
+    "sudo cat #usbNo# |grep Serial\ Number |awk '{print $3}'";
   //调用python 脚本文件进行硬盘复制
   var diskCloneCMDStr =
     "sudo python  /var/opt/dcpy/disk_copy.py '{execData}' ";
+
+  var loadProcessStr = 'printf "status" | nc 10.0.5.6 9999';
 
 
   angular.module('app')
@@ -46,7 +58,9 @@
       calcUSBSpace: calcUSBSpace,
       execDiskCopy: execDiskCopy,
       readCopyDiskInfo: readCopyDiskInfo,
-      deleteFileExists: deleteFileExists
+      deleteFileExists: deleteFileExists,
+      getUSBProduct: getUSBProduct,
+      getUSBSerialNO: getUSBSerialNO
     };
 
     function loadDiskList() {
@@ -143,21 +157,27 @@
           if (err) deferred.reject(err);
           deferred.resolve(stdout);
         });
-      } else {
-        console.log('source参数不能为空...');
-        deferred.reject('source参数不能为空...');
-      }
-      // setTimeout(function() {
-      //   deferred.resolve('{"status":"success"}');
-      // }, 5000);
+        // setTimeout(function() {
+        //   deferred.resolve('{"status":"success"}');
+        // }, 5000);
 
-      return deferred.promise;
+        return deferred.promise;
+      }
     }
 
     //读取当前拷贝数据信息
-    function readCopyDiskInfo(path) {
+    function readCopyDiskInfo() {
       try {
-        if (path && fs.existsSync(path)) {
+
+
+        var tempCalcStr = loadProcessStr;
+        return execSync(tempCalcStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        });
+
+
+        /*if (path && fs.existsSync(path)) {
           var data = fs.readFileSync('/tmp/p', 'utf-8');
           if (data) {
             var result = {};
@@ -166,7 +186,18 @@
             result['buffer'] = tempData[1].toString();
             return result;
           }
-        }
+        }*/
+
+        /*request('http://localhost:8001', function(error, response, body) {
+          if (!error && response.statusCode == 200 && body) {
+            var jsonInfo = JSON.parse(body);
+            var result = {};
+            result['copySize'] = jsonInfo.process;
+            result['buffer'] = jsonInfo.speed;
+            return result;
+          }
+        });*/
+
       } catch (e) {
         //logger.debug("err:" + e.toString());
         console.log(e);
@@ -179,5 +210,33 @@
       }
     }
 
+    //获取usb product
+    function getUSBProduct(usbNO) {
+      if (usbNO) {
+        var tempUSBProductStr = getUSBProductStr.replace(
+          '#usbNo#', usbMountNO);
+        return execSync(tempUSBProductStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        });
+      }
+    }
+    //获取usb serialNo
+    function getUSBSerialNO(usbNO) {
+      if (usbNO) {
+        var tempUSBSerialNOStr = getUSBSerialNOStr.replace(
+          '#usbNo#', usbNO);
+        return execSync(tempUSBSerialNOStr, {
+          explicitArray: false,
+          ignoreAttrs: false
+        });
+      }
+    }
+
+    function startSocket() {
+
+    }
   }
+
+  //chatServer.listen(9000);
 })();
