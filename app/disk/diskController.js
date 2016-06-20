@@ -83,6 +83,8 @@
         var cdromData = disk['cdromJsonData'];
         var hardDiskData = disk['hardDiskJsonData'];
         var usbData = disk['usbJsonData'];
+        console.log('usbData:');
+        console.log(usbData);
         //显示USB信息
         buildUSBData(usbData, tileTmpl);
         //不显示cdrom
@@ -388,15 +390,15 @@
           self.determinateValue = 0;
           self.determinateValue2 = 0;
           //读取已经克隆的大小
-          var readDiskInfo = diskService.readCopyDiskInfo();
-          if (readDiskInfo) {
-            console.log('diskService--readDiskInfo:');
-            var readDiskInfoStr = readDiskInfo.toString();
-            console.log(readDiskInfoStr);
-            var readDiskInfoJson = JSON.parse(readDiskInfoStr);
-            self.showProress(readDiskInfoJson);
-          }
-
+          diskService.readCopyDiskInfo().then(
+            function(readDiskInfo) {
+              console.log('diskService--readDiskInfo:' + readDiskInfo);
+              var readDiskInfoStr = readDiskInfo.toString();
+              if (readDiskInfo && readDiskInfoStr.length > 0) {
+                var readDiskInfoJson = JSON.parse(readDiskInfoStr);
+                self.showProress(readDiskInfoJson);
+              }
+            });
         }, 1000, 0, true); //1000:表示每隔1000毫秒去获取
 
 
@@ -558,9 +560,13 @@
           if (currentNode.product) {
             it.product = currentNode.product;
           }
+
           if (currentNode.node && currentNode.node.node && currentNode.node.node
             .product) {
             it.product = currentNode.node.node.product;
+          }
+          if (currentNode.serial) {
+            it.serial = currentNode.serial;
           }
           //组装usb名称和logicalname
           if (currentNode.node.node && currentNode.node.node &&
@@ -568,8 +574,7 @@
             .node.logicalname) {
             if (typeof currentNode.node.node.logicalname == 'object') {
               var usbLogicalNameIndex = currentNode.node.node.logicalname
-                .length -
-                1;
+                .length - 1;
               var usbName = currentNode.node.node.logicalname[
                 usbLogicalNameIndex];
               it.realTitle = usbName;
@@ -607,6 +612,7 @@
           }
 
           //var usbProduct = diskService.getUSBProduct();
+
           self.usbArr.push(it);
         }
       }

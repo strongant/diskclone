@@ -45,7 +45,9 @@
   var diskCloneCMDStr =
     "sudo python  /var/opt/dcpy/disk_copy.py '{execData}' ";
 
-  var loadProcessStr = 'printf "status" | nc 10.0.5.6 9999';
+  var loadProcessStr = 'printf "status" | nc 127.0.0.1 9999';
+
+  var killPythonProcess = 'sudo killall python';
 
 
   angular.module('app')
@@ -60,10 +62,17 @@
       readCopyDiskInfo: readCopyDiskInfo,
       deleteFileExists: deleteFileExists,
       getUSBProduct: getUSBProduct,
-      getUSBSerialNO: getUSBSerialNO
+      getUSBSerialNO: getUSBSerialNO,
+      killPython: killPython
     };
 
+    function killPython() {
+      exec(killPythonProcess);
+    }
+
     function loadDiskList() {
+      killPython();
+
       var usbJsonArr = [];
       var hardDiskJsonArr = [];
       var cdromJsonArr = [];
@@ -167,41 +176,21 @@
 
     //读取当前拷贝数据信息
     function readCopyDiskInfo() {
+      var deferred = $q.defer();
       try {
-
-
         var tempCalcStr = loadProcessStr;
-        return execSync(tempCalcStr, {
+        exec(tempCalcStr, {
           explicitArray: false,
           ignoreAttrs: false
+        }, function(err, stdout, stderr) {
+          if (err) deferred.reject(err);
+          deferred.resolve(stdout);
         });
-
-
-        /*if (path && fs.existsSync(path)) {
-          var data = fs.readFileSync('/tmp/p', 'utf-8');
-          if (data) {
-            var result = {};
-            var tempData = data.split(',');
-            result['copySize'] = tempData[0].toString();
-            result['buffer'] = tempData[1].toString();
-            return result;
-          }
-        }*/
-
-        /*request('http://localhost:8001', function(error, response, body) {
-          if (!error && response.statusCode == 200 && body) {
-            var jsonInfo = JSON.parse(body);
-            var result = {};
-            result['copySize'] = jsonInfo.process;
-            result['buffer'] = jsonInfo.speed;
-            return result;
-          }
-        });*/
-
       } catch (e) {
         //logger.debug("err:" + e.toString());
         console.log(e);
       }
+      return deferred.promise;
     }
     //判断文件是否存在，如果存在将其删除
     function deleteFileExists(path) {
