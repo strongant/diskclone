@@ -36,6 +36,70 @@
     <script src="./disk/diskFilter.js" charset="utf-8"></script>
     <script src="./usb/usbService.js" charset="utf-8"></script>
     <script src="./usb/usbController.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        const {
+            remote
+        } = require('electron');
+        const {
+            Menu,
+            MenuItem
+        } = remote;
+
+        const menu = new Menu();
+        menu.append(new MenuItem({
+            label: '刷新',
+            accelerator: 'CmdOrCtrl+R',
+            click(item, focusedWindow) {
+              if (focusedWindow) focusedWindow.reload();
+            }
+        }));
+        menu.append(new MenuItem({
+            type: 'separator'
+        }));
+        menu.append(new MenuItem({
+            label: '停止克隆',
+            click() {
+                console.log('');
+            }
+        }));
+        menu.append(new MenuItem({
+            type: 'separator'
+        }));
+        menu.append(new MenuItem({
+            label: '显示或隐藏开发者工具',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click(item, focusedWindow) {
+              if (focusedWindow)
+                focusedWindow.webContents.toggleDevTools();
+            }
+        }));
+        menu.append(new MenuItem({
+            type: 'separator'
+        }));
+        menu.append(new MenuItem({
+          label: '全屏',
+          accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11',
+          click(item, focusedWindow) {
+            if (focusedWindow)
+              focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+          }
+        }));
+        menu.append(new MenuItem({
+            type: 'separator'
+        }));
+        menu.append(new MenuItem({
+          label: '关闭',
+          accelerator: 'CmdOrCtrl+W',
+          role: 'close'
+        }));
+        menu.append(new MenuItem({
+            type: 'separator'
+        }));
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            menu.popup(remote.getCurrentWindow());
+        }, false);
+    </script>
 
     <!-- endbuild -->
 </body>

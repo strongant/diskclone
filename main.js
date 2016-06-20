@@ -1,8 +1,25 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 
 let mainWindow;
+
+
+
+let rightClickPosition = null
+
+
+/*electron.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  rightClickPosition = {
+    x: e.x,
+    y: e.y
+  }
+  Menu.popup(electron.getCurrentWindow());
+}, false);
+*/
 
 let iconPath = __dirname + '/app/assets/img/appledisk.png';
 // const appIcon = new Tray(
@@ -10,7 +27,41 @@ let iconPath = __dirname + '/app/assets/img/appledisk.png';
 // var iconPath =
 //   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png';
 //let appIcon = new Tray('/Users/somebody/images/icon.png');
+const template = [{
+  label: 'View',
+  submenu: [{
+    label: '刷新',
+    accelerator: 'CmdOrCtrl+R',
+    click(item, focusedWindow) {
+      if (focusedWindow) focusedWindow.reload();
+    }
+  }, {
+    label: '全屏',
+    accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11',
+    click(item, focusedWindow) {
+      if (focusedWindow)
+        focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+    }
+  }, {
+    label: '显示或隐藏开发者工具',
+    accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+    click(item, focusedWindow) {
+      if (focusedWindow)
+        focusedWindow.webContents.toggleDevTools();
+    }
+  }, ]
+}, {
+  label: 'Window',
+  role: 'window',
+  submenu: [{
+    label: '关闭',
+    accelerator: 'CmdOrCtrl+W',
+    role: 'close'
+  }, ]
+}, ];
 
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
