@@ -67,7 +67,12 @@
     };
 
     function killPython() {
-      exec(killPythonProcess);
+      exec(killPythonProcess, function(err, stdout, stderr) {
+        if (err) {
+          //console.log(err);
+        }
+      });
+
     }
 
     function loadDiskList() {
