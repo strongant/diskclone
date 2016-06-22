@@ -12,7 +12,6 @@
   const fs = require('fs');
   const processor = require('process');
 
-  //const chatServer = net.createServer()；
 
   //异步加载硬盘信息
   const exec = require('child_process').exec;
@@ -69,7 +68,6 @@
     function killPython() {
       exec(killPythonProcess, function(err, stdout, stderr) {
         if (err) {
-          //console.log(err);
         }
       });
 
