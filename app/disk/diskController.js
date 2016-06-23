@@ -308,15 +308,12 @@
         console.log(self.checkDiskSize);
         if (self.determinateValue >= countSize) self.determinateValue =
           self.determinateValue;
-        /*  if (self.determinateValue2 >= countSize) self.determinateValue2 =
-            readDiskInfo.speed;*/
-
       }
     };
 
 
     self.startCopy = function() {
-      if (self.disks.length == 0) {
+      if (self.disks.length === 0) {
         self.showDialog('克隆提示', '请至少选择一个硬盘进行操作!', '操作提示', '返回选择');
         return;
       }
