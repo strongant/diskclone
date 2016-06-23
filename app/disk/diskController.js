@@ -529,91 +529,120 @@
 
     function buildUSBData(usbData, tileTmpl) {
       if (usbData) {
+        console.log('usbData.length:');
+        console.log(usbData.length);
         for (var i = 0; i < usbData.length; i++) {
           var currentNode = usbData[i];
           console.log('currentNode:');
           console.log(currentNode);
-          it = angular.extend({}, tileTmpl);
-          it.icon = it.icon + 'usb';
-          it.background = 'blue';
-          it.span = {
-            row: 1,
-            col: 1
-          };
-          //usb详情
-          it.diskData = currentNode;
-          it.span.row = it.span.col = 3;
-
-          if (typeof currentNode.node.node.logicalname == 'object') {
-            it.title = currentNode.node.node.logicalname[0];
-          } else if (typeof currentNode.node.node.logicalname == 'string') {
-            it.title = currentNode.node.node.logicalname;
-          }
-          it.realTitle = it.title;
-          if (currentNode.serial) {
-            it.serial = currentNode.serial;
-          }
+          //将不规则的USB设备排除
           if (currentNode.node && currentNode.node.node && currentNode.node.node
-            .serial) {
-            it.serial = currentNode.node.node.serial;
-          }
-          if (currentNode.product) {
-            it.product = currentNode.product;
-          }
+            .node && typeof currentNode.node.node.node == 'object') {
+            console.log("otherusb:");
+            console.log(currentNode);
+          } else {
+            //只显示挂载的USB设备
 
-          if (currentNode.node && currentNode.node.node && currentNode.node.node
-            .product) {
-            it.product = currentNode.node.node.product;
-          }
-          if (currentNode.serial) {
-            it.serial = currentNode.serial;
-          }
-          //组装usb名称和logicalname
-          if (currentNode.node.node && currentNode.node.node &&
-            currentNode.node
-            .node.logicalname) {
-            if (typeof currentNode.node.node.logicalname == 'object') {
-              var usbLogicalNameIndex = currentNode.node.node.logicalname
-                .length - 1;
-              var usbName = currentNode.node.node.logicalname[
-                usbLogicalNameIndex];
-              it.realTitle = usbName;
-              //计算USB剩余的存储空间
-
-              var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
-              if (usbUserSpace) {
-                it.usbUesSpace = parseInt(usbUserSpace.toString());
-                it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
+            var tempState = "";
+            if (currentNode.node && currentNode.node.node && currentNode.node
+              .node.configuration && currentNode.node
+              .node.configuration.setting) {
+              var subConfigSettingArr = currentNode.node.node.configuration.setting;
+              for (var j = 0; j < subConfigSettingArr.length; j++) {
+                var subConfig = subConfigSettingArr[j];
+                if (subConfig.$ && subConfig.$.id && subConfig.$.id ==
+                  'state') {
+                  tempState = subConfig.$.value;
+                  break;
+                }
               }
-              var usbNameArr = usbName.split('/');
-              var usbNameEndIndex = usbNameArr.length - 1;
-              it.title = usbNameArr[usbNameEndIndex];
+            }
+            if (tempState == 'mounted') {
 
-              self.usbValArr.push(it.realTitle);
+
+
+              it = angular.extend({}, tileTmpl);
+              it.icon = it.icon + 'usb';
+              it.background = 'blue';
+              it.span = {
+                row: 1,
+                col: 1
+              };
+              //usb详情
+              it.diskData = currentNode;
+              it.span.row = it.span.col = 3;
+
+              if (typeof currentNode.node.node.logicalname == 'object') {
+                it.title = currentNode.node.node.logicalname[0];
+              } else if (typeof currentNode.node.node.logicalname == 'string') {
+                it.title = currentNode.node.node.logicalname;
+              }
+              it.realTitle = it.title;
+              if (currentNode.serial) {
+                it.serial = currentNode.serial;
+              }
+              if (currentNode.node && currentNode.node.node && currentNode.node
+                .node
+                .serial) {
+                it.serial = currentNode.node.node.serial;
+              }
+              if (currentNode.product) {
+                it.product = currentNode.product;
+              }
+
+              if (currentNode.node && currentNode.node.node && currentNode.node
+                .node
+                .product) {
+                it.product = currentNode.node.node.product;
+              }
+              if (currentNode.serial) {
+                it.serial = currentNode.serial;
+              }
+              //组装usb名称和logicalname
+              if (currentNode.node.node && currentNode.node.node &&
+                currentNode.node
+                .node.logicalname) {
+                if (typeof currentNode.node.node.logicalname == 'object') {
+                  var usbLogicalNameIndex = currentNode.node.node.logicalname
+                    .length - 1;
+                  var usbName = currentNode.node.node.logicalname[
+                    usbLogicalNameIndex];
+                  it.realTitle = usbName;
+                  //计算USB剩余的存储空间
+
+                  var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
+                  if (usbUserSpace) {
+                    it.usbUesSpace = parseInt(usbUserSpace.toString());
+                    it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
+                  }
+                  var usbNameArr = usbName.split('/');
+                  var usbNameEndIndex = usbNameArr.length - 1;
+                  it.title = usbNameArr[usbNameEndIndex];
+
+                  self.usbValArr.push(it.realTitle);
+                }
+              }
+              if (it.title.length > 15) {
+                it.title = it.title.substr(0, 10) + "...";
+              }
+
+              if (currentNode.node && currentNode.node.size && currentNode.node
+                .size
+                ._) {
+                var diskNodeSize = currentNode.node.size._ / 1000 / 1000 /
+                  1000;
+                it.capacity = diskNodeSize.toFixed(1);
+              } else {
+                it.capacity = 0;
+              }
+              //计算使用比例
+              if (it.capacity && it.useCapacity && it.capacity > 0) {
+                it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(
+                  0);
+              }
+              self.usbArr.push(it);
             }
           }
-          if (it.title.length > 15) {
-            it.title = it.title.substr(0, 10) + "...";
-          }
-
-          if (currentNode.node && currentNode.node.size && currentNode.node
-            .size
-            ._) {
-            var diskNodeSize = currentNode.node.size._ / 1000 / 1000 /
-              1000;
-            it.capacity = diskNodeSize.toFixed(1);
-          } else {
-            it.capacity = 0;
-          }
-          //计算使用比例
-          if (it.capacity && it.useCapacity && it.capacity > 0) {
-            it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(
-              0);
-          }
-
-          //var usbProduct = diskService.getUSBProduct();
-
-          self.usbArr.push(it);
         }
       }
     }

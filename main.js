@@ -5,28 +5,8 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 
 let mainWindow;
-
-
-
-let rightClickPosition = null
-
-
-/*electron.addEventListener('contextmenu', (e) => {
-  e.preventDefault()
-  rightClickPosition = {
-    x: e.x,
-    y: e.y
-  }
-  Menu.popup(electron.getCurrentWindow());
-}, false);
-*/
-
 let iconPath = __dirname + '/app/assets/img/appledisk.png';
-// const appIcon = new Tray(
-//   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png');
-// var iconPath =
-//   '/home/devbwh/study/electron/diskclone/app/assets/img/appledisk.png';
-//let appIcon = new Tray('/Users/somebody/images/icon.png');
+
 const template = [{
   label: 'View',
   submenu: [{
