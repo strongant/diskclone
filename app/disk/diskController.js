@@ -300,9 +300,10 @@
         self.determinateValue2 = self.determinateValue +
           readDiskInfo.buffer;
         var tempTip = self.cloneTip;
-
-        self.cloneTip = '克隆进行中,当前速度:' + readDiskInfo.speed +
-          'MB/S,请稍后...';
+        if (readDiskInfo.speed !== undefined) {
+          self.cloneTip = '克隆进行中,当前速度:' + readDiskInfo.speed +
+            'MB/S,请稍后...';
+        }
         var countSize = 100;
         console.log(self.checkDiskSize);
         if (self.determinateValue >= countSize) self.determinateValue =
@@ -492,20 +493,8 @@
         function() {
           callback();
         });
-      // setTimeout(function() {
-      //   location.reload();
-      // }, 2000);
       return;
     };
-    //间隔一段事件获取USB的传输情况
-    // var queryUSBCacity = $interval(function() {
-    //     // Increment the Determinate loader
-    //     diskService.loadDiskList().then(function(disk) {
-    //         var usbData = disk['usbJsonData'];
-    //
-    //     });
-    // }, 1000, 0, true);
-
 
     //重新加载USB信息
     function loadUSBInfo(tileTmpl) { //callback
