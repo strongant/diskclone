@@ -521,19 +521,50 @@
           var currentNode = usbData[i];
           console.log('currentNode:');
           console.log(currentNode);
-          //将不规则的USB设备排除
+          var mountedDisk;
+          //当存在usb设备2个分区时只显示第一块分区
           if (currentNode.node && currentNode.node.node && currentNode.node.node
-            .node && typeof currentNode.node.node.node == 'object') {
-            console.log("otherusb:");
-            console.log(currentNode);
-          } else {
-            //只显示挂载的USB设备
-
+            .length >= 2) {
+            var tmpCurrentNodes = currentNode.node.node;
+            var judgeCycle = false;
+            for (var t = 0; t < tmpCurrentNodes.length; t++) {
+              var tmpFirstNode = tmpCurrentNodes[t];
+              if (tmpFirstNode.configuration && tmpFirstNode.configuration.setting &&
+                tmpFirstNode.logicalname.length >= 2) {
+                var tmpFirstNodeSettingArr = tmpFirstNode.configuration.setting;
+                for (var k = 0; k < tmpFirstNodeSettingArr.length; k++) {
+                  var tmpFirstNodeConfig = tmpFirstNodeSettingArr[k];
+                  if (tmpFirstNodeConfig.$ && tmpFirstNodeConfig.$.id &&
+                    tmpFirstNodeConfig.$.id ==
+                    'state') {
+                    if (tmpFirstNodeConfig.$.value == 'mounted') {
+                      console.log("double partition");
+                      if (currentNode.node && currentNode.node.node) {
+                        currentNode.node.node = tmpFirstNode;
+                      }
+                      console.log(currentNode);
+                      judgeCycle = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (judgeCycle) {
+                break;
+              }
+            }
+          }
+          //将不规则的USB设备排除
+          if (!(currentNode.node && currentNode.node.node && currentNode.node
+              .node
+              .node && typeof currentNode.node.node.node == 'object')) {
             var tempState = "";
             if (currentNode.node && currentNode.node.node && currentNode.node
               .node.configuration && currentNode.node
               .node.configuration.setting) {
-              var subConfigSettingArr = currentNode.node.node.configuration.setting;
+
+              var subConfigSettingArr = currentNode.node.node.configuration
+                .setting;
               for (var j = 0; j < subConfigSettingArr.length; j++) {
                 var subConfig = subConfigSettingArr[j];
                 if (subConfig.$ && subConfig.$.id && subConfig.$.id ==
@@ -543,9 +574,9 @@
                 }
               }
             }
+
             if (tempState == 'mounted') {
-
-
+              //处理
 
               it = angular.extend({}, tileTmpl);
               it.icon = it.icon + 'usb';
@@ -560,7 +591,8 @@
 
               if (typeof currentNode.node.node.logicalname == 'object') {
                 it.title = currentNode.node.node.logicalname[0];
-              } else if (typeof currentNode.node.node.logicalname == 'string') {
+              } else if (typeof currentNode.node.node.logicalname ==
+                'string') {
                 it.title = currentNode.node.node.logicalname;
               }
               it.realTitle = it.title;
@@ -630,6 +662,7 @@
             }
           }
         }
+
       }
     }
 

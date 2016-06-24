@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . DiskClone --platform linux --arch x64 --version 1.1.3  --prune  --out=dist/ --overwrite  --icon =app/assets/img/appledisk.png --prune   --ignore=node_modules/electron-prebuilt --ignore=node_modules/electron-packager --ignore =.git",
+    "pack": "sudo zip -r d.zip dist/ && mv d.zip /tmp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
