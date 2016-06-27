@@ -12,6 +12,26 @@
   const fs = require('fs');
   const processor = require('process');
 
+  var log4js = require('log4js');
+  const processor = require('process');
+  log4js.configure({
+    appenders: [{
+      type: 'console'
+    }, {
+      type: 'file',
+      filename: '/tmp/access.log',
+      maxLogSize: 1024,
+      backups: 4,
+      category: 'normal'
+    }],
+    replaceConsole: true
+  });
+  const logger = log4js.getLogger(name);
+  logger.setLevel('INFO');
+
+  /*  const logger = require('logger').logger(
+      'diskService');*/
+
 
   //异步加载硬盘信息
   const exec = require('child_process').exec;
@@ -26,11 +46,20 @@
   const parseString = require('xml2js').parseString;
   var parser = require('xml2json');
 
+
+
   //sudo df -hl |grep /dev/sda1  获取使用大小
   var loadDiskCmdStr = 'sudo';
   var txtPath = '/tmp/data.xml';
+
   var execDiskCMDStr =
     'sudo lshw -class disk -class storage -class volume -xml > ' + txtPath;
+
+  //解析新版内置硬盘出错
+  var newTxtPath = '/tmp/newdisk.json';
+  var execInnerDiskCMDStr =
+    'sudo lsblk -o name,size,vendor,model,serial,type,hotplug -d -b -J >' +
+    newTxtPath;
 
   //{USBMountPoint}:U盘挂载点
   var loadCalcUSBUserSpaceStr =
@@ -62,7 +91,8 @@
       deleteFileExists: deleteFileExists,
       getUSBProduct: getUSBProduct,
       getUSBSerialNO: getUSBSerialNO,
-      killPython: killPython
+      killPython: killPython,
+      loadNewDiskList: loadNewDiskList
     };
 
     function killPython() {
@@ -77,14 +107,6 @@
       var cdromJsonArr = [];
       var diskData = {};
       var deferred = $q.defer();
-
-      // var allDiskData = spawn('sudo', ['lshw', '-class', 'disk',
-      //     '-class', 'storage',
-      //     '-class', 'volume',
-      //     '-xml', '>', txtPath
-      // ], {
-      //     encoding: 'utf8'
-      // });
       var child = exec(execDiskCMDStr);
       child.stderr.on('data', function(data) {
         console.log('stdout: ' + data);
@@ -140,6 +162,47 @@
       return deferred.promise;
     }
 
+    //解析新的内置硬盘列表信息
+    function loadNewDiskList() {
+      var deferred = $q.defer();
+      var child = exec(execInnerDiskCMDStr);
+      var newHardDiskData = {};
+      var newHardDiskJsonArr = [];
+      child.stderr.on('data', function(data) {
+        console.log('stdout: ' + data);
+        //logger.info("stdout:" + data);
+        deferred.reject(data);
+      });
+
+      child.on('close', function(code) {
+        var newDiskText = fs.readFileSync(newTxtPath, "utf8");
+        var newDiskJson = null;
+        var tempDiskObj = null;
+
+        try {
+          var newJsonObj = JSON.parse(newDiskText);
+          if (newJsonObj && newJsonObj.blockdevices) {
+            newDiskJson = newJsonObj.blockdevices;
+            if (newDiskJson) {
+              for (var t = 0; t < newDiskJson.length; t++) {
+                tempDiskObj = newDiskJson[t];
+                if (tempDiskObj.type === 'disk' && tempDiskObj.hotplug ===
+                  '0') {
+                  newHardDiskJsonArr.push(tempDiskObj);
+                }
+              }
+            }
+            deferred.resolve(newHardDiskJsonArr);
+          }
+        } catch (e) {
+          console.log(e);
+          //logger.error(e.toString());
+          deferred.reject(e);
+        }
+      });
+      return deferred.promise;
+    }
+
     //通过指定的USB设备名称计算已经使用空间
     function calcUSBSpace(usbMountPoint) {
       if (usbMountPoint) {
@@ -187,6 +250,7 @@
         });
       } catch (e) {
         //logger.debug("err:" + e.toString());
+        //logger.error("error:" + data);
         console.log(e);
       }
       return deferred.promise;

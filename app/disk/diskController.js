@@ -73,9 +73,13 @@
     function buildGridModel(tileTmpl) {
       var it, results = [],
         usbResults = [];
-      //diskService.loadDiskList();
+
+      diskService.loadNewDiskList().then(function(data) {
+        console.log('loadNewDiskList:');
+        console.log(data);
+      });
       diskService.loadDiskList().then(function(disk) {
-        if (!disk && !disk.list.node) {
+        if (!disk) {
           console.log('this computer is no disk or load error');
           return;
         }
@@ -83,7 +87,12 @@
         var cdromData = disk['cdromJsonData'];
         var hardDiskData = disk['hardDiskJsonData'];
         var usbData = disk['usbJsonData'];
+        console.log('hardDiskData:');
+        console.log(JSON.stringify(hardDiskData));
+        console.log(hardDiskData);
+
         console.log('usbData:');
+        console.log(JSON.stringify(usbData));
         console.log(usbData);
         //显示USB信息
         buildUSBData(usbData, tileTmpl);
@@ -94,7 +103,7 @@
 
         //构造除过cdrom和usb的存储设备信息
         // for (var t = 0; t < 1; t++) {
-        if (expectUsbArr) {
+        if (expectUsbArr && expectUsbArr.length >= 1) {
           for (var i = 0; i < expectUsbArr.length; i++) {
             var currentNode = expectUsbArr[i];
             it = angular.extend({}, tileTmpl);
@@ -139,7 +148,8 @@
             if (currentNode.node.size && currentNode.node.size._) {
               detailData['size'] = currentNode.node.size._;
             }
-            if (currentNode.node.node && currentNode.node.node.length > 0) {
+            if (currentNode.node.node && currentNode.node.node.length >
+              0) {
               for (var cnode = 0; cnode < currentNode.node.node.length; cnode++) {
                 var subNode = currentNode.node.node[cnode];
                 if (subNode.serial) {
@@ -217,10 +227,91 @@
               self.disks.push(it.realTitle);
               self.checkDiskSize = it.realSize;
             }
-            // console.log('results:' + results.length);
-            // console.log(results);
-            // console.log('--------------------');
+
           }
+
+        } else {
+          diskService.loadNewDiskList().then(function(newJsonObj) {
+            console.log('newDiskListData:');
+            console.log(newJsonObj);
+            if (newJsonObj && newJsonObj.length >= 1) {
+              for (var i = 0; i < newJsonObj.length; i++) {
+                var currentNode = newJsonObj[i];
+                it = angular.extend({}, tileTmpl);
+                it.icon = it.icon + 'disk';
+                it.span = {
+                  row: 1,
+                  col: 1
+                };
+                //硬盘详情
+                it.diskData = currentNode;
+                it.background = it.background;
+                it.span.row = it.span.col = 3;
+                //组装表格中需要显示的数据
+                var detailData = {};
+
+                if (currentNode.vendor) {
+                  it.product = currentNode.vendor;
+                  detailData['product'] = currentNode.vendor;
+                }
+
+                if (currentNode.model) {
+                  detailData['description'] = currentNode.model;
+                }
+
+
+                if (currentNode.serial) {
+                  it.serial = currentNode.serial;
+                  detailData['serial'] = currentNode.serial;
+                }
+
+                if (currentNode.name) {
+                  detailData['logicalname'] = "/dev/" + currentNode.name;
+                }
+
+                if (currentNode.size) {
+                  detailData['size'] = currentNode.size;
+                }
+                var diskKeyArr = Object.keys(detailData);
+                // console.log('diskKeyArr:');
+                // console.log(diskKeyArr);
+                it.currentDiskDetail = [];
+                for (var key in diskKeyArr) {
+                  var tempJson = {};
+                  tempJson['key'] = diskKeyArr[key];
+                  tempJson['value'] = detailData[diskKeyArr[key]];
+                  it.currentDiskDetail.push(tempJson);
+                }
+                it.title = "/dev/" + currentNode.name;
+                it.realTitle = it.title;
+                if (it.title.length > 10) {
+                  it.title = it.title.substr(0, 10) + "...";
+                }
+                it.realSize = currentNode.size;
+                if (currentNode.size) {
+                  var diskNodeSize = currentNode.size / 1024 /
+                    1024 /
+                    1024;
+                  it.realSize = currentNode.size;
+                  it.capacity = diskNodeSize.toFixed(2);
+                } else {
+                  it.capacity = 0;
+                }
+                results.push(it);
+                if (i === 0 && it.diskData && it.title) {
+                  //self.detailData = it.diskData;
+                  self.detailData = [];
+                  self.detailData = it.currentDiskDetail;
+                  // console.log('self.detailData:');
+                  // console.log(self.detailData);
+                  self.showTitle = it.title;
+                  //硬盘操作默认选中第一个
+                  self.disks.push(it.realTitle);
+                  self.checkDiskSize = it.realSize;
+                }
+              }
+            }
+          });
         }
 
 
@@ -539,10 +630,10 @@
                     'state') {
                     if (tmpFirstNodeConfig.$.value == 'mounted') {
                       console.log("double partition");
-                      if (currentNode.node && currentNode.node.node) {
-                        currentNode.node.node = tmpFirstNode;
-                      }
-                      console.log(currentNode);
+                      console.log(tmpFirstNode);
+                      currentNode.node.node = tmpFirstNode;
+                      currentNode.node.size._ = tmpFirstNode.size._;
+                      console.log(JSON.stringify(tmpFirstNode));
                       judgeCycle = true;
                       break;
                     }
