@@ -540,7 +540,6 @@
                 self.waitLoadUSB = false;
                 $interval.clear(self.waitLoadProgress);
 
-
               });
 
             } else {
