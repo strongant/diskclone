@@ -31,3 +31,7 @@ Package app
 #To run 'sudo zip -r d.zip dist/ && mv -f d.zip /tmp' zip app move to /tmp
 npm run pack
 ```
+View log file
+```bash
+cat /tmp/access.log
+```
