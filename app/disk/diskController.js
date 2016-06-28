@@ -74,10 +74,7 @@
       var it, results = [],
         usbResults = [];
 
-      diskService.loadNewDiskList().then(function(data) {
-        console.log('loadNewDiskList:');
-        console.log(data);
-      });
+
       diskService.loadDiskList().then(function(disk) {
         if (!disk) {
           console.log('this computer is no disk or load error');
@@ -87,13 +84,13 @@
         var cdromData = disk['cdromJsonData'];
         var hardDiskData = disk['hardDiskJsonData'];
         var usbData = disk['usbJsonData'];
-        console.log('hardDiskData:');
-        console.log(JSON.stringify(hardDiskData));
-        console.log(hardDiskData);
+        //console.log('hardDiskData:');
+        //console.log(JSON.stringify(hardDiskData));
+        //console.log(hardDiskData);
 
-        console.log('usbData:');
-        console.log(JSON.stringify(usbData));
-        console.log(usbData);
+        //console.log('usbData:');
+        //console.log(JSON.stringify(usbData));
+        //console.log(usbData);
         //显示USB信息
         buildUSBData(usbData, tileTmpl);
         //不显示cdrom
@@ -232,8 +229,8 @@
 
         } else {
           diskService.loadNewDiskList().then(function(newJsonObj) {
-            console.log('newDiskListData:');
-            console.log(newJsonObj);
+            //console.log('newDiskListData:');
+            //console.log(newJsonObj);
             if (newJsonObj && newJsonObj.length >= 1) {
               for (var i = 0; i < newJsonObj.length; i++) {
                 var currentNode = newJsonObj[i];
@@ -396,7 +393,7 @@
             'MB/S,请稍后...';
         }
         var countSize = 100;
-        console.log(self.checkDiskSize);
+        //console.log(self.checkDiskSize);
         if (self.determinateValue >= countSize) self.determinateValue =
           self.determinateValue;
       }
@@ -420,8 +417,8 @@
       //组装选中的USB设备可用空间
       var checkUSBCapacityArr = [],
         targetPaths = [];
-      console.log('self.usbArr:');
-      console.log(self.usbArr);
+      //console.log('self.usbArr:');
+      //console.log(self.usbArr);
       for (var i = 0; i < self.usbArr.length; i++) {
         var useCapacity = self.usbArr[i];
         if (self.usbValArr.indexOf(useCapacity.realTitle) > -1) {
@@ -468,8 +465,8 @@
       self.postData['blockSize'] = self.blockSize;
 
       self.postStr = JSON.stringify(self.postData);
-      console.log('postStr:');
-      console.log(self.postStr);
+      //console.log('postStr:');
+      //console.log(self.postStr);
 
       try {
         //var cloneOut = '/tmp/p';
@@ -481,7 +478,7 @@
           //读取已经克隆的大小
           diskService.readCopyDiskInfo().then(
             function(readDiskInfo) {
-              console.log('diskService--readDiskInfo:' + readDiskInfo);
+              //console.log('diskService--readDiskInfo:' + readDiskInfo);
               var readDiskInfoStr = readDiskInfo.toString();
               if (readDiskInfo && readDiskInfoStr.length > 0) {
                 var readDiskInfoJson = JSON.parse(readDiskInfoStr);
@@ -493,11 +490,10 @@
 
 
         diskService.execDiskCopy(self.postStr).then(function(result) {
-          console.log('-------------------克隆完成后result:');
-          console.log("result:");
-          console.log(result);
+          //console.log('-------------------克隆完成后result:');
+          //console.log(result);
           if (result && result.trim() == 'error') {
-            //进度条取消，提示克隆成功
+            console.log("克隆错误");
             $interval.cancel(self.diskCloneOP);
             self.cloneActivated = false;
             self.showDialog('克隆提示', '参数错误', '错误提示', '返回检查', function() {
@@ -563,6 +559,7 @@
         });
 
       } catch (e) {
+        console.log('克隆时发生错误:');
         console.log(e);
         self.showDialog('克隆提示', '克隆时发生错误', '错误提示', '请联系管理人员');
         $interval.cancel(self.diskCloneOP);
@@ -595,23 +592,23 @@
           return;
         }
         var usbData = disk['usbJsonData'];
-        console.log(usbData.length);
+        //console.log(usbData.length);
         //组装usb信息
         buildUSBData(usbData, tileTmpl);
         //callback();
-        console.log("self.usbArr:");
-        console.log(self.usbArr);
+        //console.log("self.usbArr:");
+        //console.log(self.usbArr);
       });
     }
 
     function buildUSBData(usbData, tileTmpl) {
       if (usbData) {
-        console.log('usbData.length:');
-        console.log(usbData.length);
+        //console.log('usbData.length:');
+        //console.log(usbData.length);
         for (var i = 0; i < usbData.length; i++) {
           var currentNode = usbData[i];
-          console.log('currentNode:');
-          console.log(currentNode);
+          //console.log('currentNode:');
+          //console.log(currentNode);
           var mountedDisk;
           //当存在usb设备2个分区时只显示第一块分区
           if (currentNode.node && currentNode.node.node && currentNode.node.node
@@ -629,11 +626,11 @@
                     tmpFirstNodeConfig.$.id ==
                     'state') {
                     if (tmpFirstNodeConfig.$.value == 'mounted') {
-                      console.log("double partition");
-                      console.log(tmpFirstNode);
+                      //console.log("double partition");
+                      //console.log(tmpFirstNode);
                       currentNode.node.node = tmpFirstNode;
                       currentNode.node.size._ = tmpFirstNode.size._;
-                      console.log(JSON.stringify(tmpFirstNode));
+                      //console.log(JSON.stringify(tmpFirstNode));
                       judgeCycle = true;
                       break;
                     }

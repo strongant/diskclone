@@ -12,8 +12,8 @@
   const fs = require('fs');
   const processor = require('process');
 
-  var log4js = require('log4js');
-  const processor = require('process');
+  const log4js = require('log4js');
+
   log4js.configure({
     appenders: [{
       type: 'console'
@@ -26,11 +26,11 @@
     }],
     replaceConsole: true
   });
-  const logger = log4js.getLogger(name);
+  const logger = log4js.getLogger('diskclone');
   logger.setLevel('INFO');
 
-  /*  const logger = require('logger').logger(
-      'diskService');*/
+  /*const logger = require('./logger.js').logger(
+    'diskService');*/
 
 
   //异步加载硬盘信息
@@ -228,9 +228,7 @@
           if (err) deferred.reject(err);
           deferred.resolve(stdout);
         });
-        // setTimeout(function() {
-        //   deferred.resolve('{"status":"success"}');
-        // }, 5000);
+
 
         return deferred.promise;
       }
@@ -249,8 +247,6 @@
           deferred.resolve(stdout);
         });
       } catch (e) {
-        //logger.debug("err:" + e.toString());
-        //logger.error("error:" + data);
         console.log(e);
       }
       return deferred.promise;
@@ -284,11 +280,7 @@
         });
       }
     }
-
-    function startSocket() {
-
-    }
   }
 
-  //chatServer.listen(9000);
+
 })();
