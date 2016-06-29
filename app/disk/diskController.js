@@ -424,7 +424,7 @@
                       subNode.name;
                   }
                   if (subNode.size) {
-                    detailData[subNode.name + '.size'] = subNode.size._;
+                    detailData[subNode.name + '.size'] = subNode.size;
                   }
                   if (subNode.fstype && subNode.name) {
                     detailData[subNode.name + '.filesystem'] = subNode.fstype;

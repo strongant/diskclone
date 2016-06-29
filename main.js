@@ -51,11 +51,11 @@ function createWindow() {
   });
 
   mainWindow.loadURL(`file://${__dirname}/app/index.html`);
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
-  //mainWindow.setFullScreen(true);
+  mainWindow.setFullScreen(true);
 }
 
 app.on('ready', createWindow);

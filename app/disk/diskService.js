@@ -45,21 +45,12 @@
   var x2js = new X2JS();
   const parseString = require('xml2js').parseString;
   var parser = require('xml2json');
-
-
-
   //sudo df -hl |grep /dev/sda1  获取使用大小
-  var loadDiskCmdStr = 'sudo';
-  var txtPath = '/tmp/data.xml';
-
-  var execDiskCMDStr =
-    'sudo lshw -class disk -class storage -class volume -xml > ' + txtPath;
-
   //解析新版内置硬盘出错
   var newTxtPath = '/tmp/newdisk.json';
   //name,mountpoint,model,vendor,serial,size,hotplug,type,fstype -b -J >/tmp/data.json
   var execInnerDiskCMDStr =
-    'sudo lsblk -o name,mountpoint,model,vendor,serial,size,hotplug,type,fstype -d -b -J >' +
+    'sudo lsblk -o name,mountpoint,model,vendor,serial,size,hotplug,type,fstype  -b -J >' +
     newTxtPath;
 
   //{USBMountPoint}:U盘挂载点
@@ -110,12 +101,11 @@
       var child = exec(execInnerDiskCMDStr);
       child.stderr.on('data', function(data) {
         console.log('stderr: ' + data);
-        //logger.info("stdout:" + data);
         deferred.reject(data);
       });
       child.on('close', function(code) {
-        try {
-          var allDiskData = fs.readFileSync(newTxtPath, "utf-8");
+        var allDiskData = fs.readFileSync(newTxtPath, "utf-8");
+        if (allDiskData) {
           var allDiskJSONData = JSON.parse(allDiskData);
           if (allDiskJSONData.blockdevices) {
             var diskArr = allDiskJSONData.blockdevices;
@@ -137,11 +127,8 @@
             diskData['cdromJsonData'] = cdromJsonArr;
             diskData['usbJsonData'] = usbJsonArr;
             diskData['hardDiskJsonData'] = hardDiskJsonArr;
+            deferred.resolve(diskData);
           }
-          deferred.resolve(diskData);
-        } catch (e) {
-          console.log(e);
-          deferred.reject(e);
         }
       });
       return deferred.promise;

@@ -1,4 +1,4 @@
-(function() {
+/*(function() {
   angular.module('app')
     .controller('usbController', ['$scope', '$q',
       USBController
@@ -14,3 +14,4 @@
 
   }
 })();
+*/
