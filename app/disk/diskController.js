@@ -80,248 +80,26 @@
           console.log('this computer is no disk or load error');
           return;
         }
-
         var cdromData = disk['cdromJsonData'];
         var hardDiskData = disk['hardDiskJsonData'];
         var usbData = disk['usbJsonData'];
-        //console.log('hardDiskData:');
-        //console.log(JSON.stringify(hardDiskData));
-        //console.log(hardDiskData);
-
-        //console.log('usbData:');
-        //console.log(JSON.stringify(usbData));
-        //console.log(usbData);
         //显示USB信息
         buildUSBData(usbData, tileTmpl);
         //不显示cdrom
         //var expectUsbArr = cdromData.concat(hardDiskData);
+
         var expectUsbArr = hardDiskData;
 
 
         //构造除过cdrom和usb的存储设备信息
-        // for (var t = 0; t < 1; t++) {
-        if (expectUsbArr && expectUsbArr.length >= 1) {
-          for (var i = 0; i < expectUsbArr.length; i++) {
-            var currentNode = expectUsbArr[i];
-            it = angular.extend({}, tileTmpl);
-            it.icon = it.icon + 'disk';
-            it.span = {
-              row: 1,
-              col: 1
-            };
-            //硬盘详情
-            it.diskData = currentNode;
-            it.background = it.background;
-            it.span.row = it.span.col = 3;
-            //组装表格中需要显示的数据
-            var detailData = {};
-
-            if (currentNode.description) {
-              detailData['description'] = currentNode.description;
-            }
-            if (!currentNode.description && currentNode.node.description) {
-              detailData['description'] = currentNode.node.description;
-            }
-            if (currentNode.product) {
-              it.product = currentNode.product;
-              detailData['product'] = currentNode.product;
-            }
-            if (currentNode.node && currentNode.node.product) {
-              it.product = currentNode.node.product;
-              detailData['product'] = currentNode.node.product;
-            }
-            if (currentNode.serial) {
-              it.serial = currentNode.serial;
-              detailData['serial'] = currentNode.serial;
-            }
-            if (currentNode.node && currentNode.node.serial) {
-              it.serial = currentNode.node.serial;
-              detailData['serial'] = currentNode.node.serial;
-            }
-            if (currentNode.node.logicalname) {
-              detailData['logicalname'] = currentNode.node.logicalname;
-            }
-
-            if (currentNode.node.size && currentNode.node.size._) {
-              detailData['size'] = currentNode.node.size._;
-            }
-            if (currentNode.node.node && currentNode.node.node.length >
-              0) {
-              for (var cnode = 0; cnode < currentNode.node.node.length; cnode++) {
-                var subNode = currentNode.node.node[cnode];
-                if (subNode.serial) {
-                  detailData[subNode.$.id + '.serial'] = subNode.serial;
-                }
-                if (subNode.logicalname) {
-                  detailData[subNode.$.id + '.logicalname'] = subNode.logicalname;
-                }
-                if (subNode.size && subNode.size._) {
-                  detailData[subNode.$.id + '.size'] = subNode.size._;
-                }
-                if (subNode.configuration && subNode.configuration.setting) {
-                  for (var subi = 0; subi < subNode.configuration.setting
-                    .length; subi++) {
-                    if (subNode.configuration.setting[subi].$.id ===
-                      'filesystem') {
-                      detailData[subNode.$.id + '.filesystem'] =
-                        subNode.configuration
-                        .setting[subi].$.value;
-                    }
-                  }
-                }
-
-              }
-            }
-            // console.log('detailData:');
-            // console.log(typeof detailData);
-            // console.log(detailData);
-            var diskKeyArr = Object.keys(detailData);
-            // console.log('diskKeyArr:');
-            // console.log(diskKeyArr);
-            it.currentDiskDetail = [];
-            for (var key in diskKeyArr) {
-              var tempJson = {};
-              tempJson['key'] = diskKeyArr[key];
-              tempJson['value'] = detailData[diskKeyArr[key]];
-              it.currentDiskDetail.push(tempJson);
-            }
-            // console.log('it.currentDiskDetail:');
-            // console.log(it.currentDiskDetail);
-
-            //console.log(currentNode);
-            //  console.log(currentNode.logicalname[0]);
-            //console.log(typeof currentNode.logicalname);
-
-            if (typeof currentNode.node.logicalname == 'object') {
-              it.title = currentNode.node.logicalname[0];
-            } else if (typeof currentNode.node.logicalname == 'string') {
-              it.title = currentNode.node.logicalname;
-            }
-            it.realTitle = it.title;
-            if (it.title.length > 10) {
-              it.title = it.title.substr(0, 10) + "...";
-            }
-
-            if (currentNode.node && currentNode.node.size) {
-              var diskNodeSize = currentNode.node.size._ / 1024 / 1024 /
-                1024;
-              it.realSize = currentNode.node.size._;
-
-              it.capacity = diskNodeSize.toFixed(2);
-            } else {
-              it.capacity = 0;
-            }
-            results.push(it);
-            //默认显示第一项
-            if (i === 0 && it.diskData && it.title) {
-              //self.detailData = it.diskData;
-              self.detailData = [];
-              self.detailData = it.currentDiskDetail;
-              // console.log('self.detailData:');
-              // console.log(self.detailData);
-              self.showTitle = it.title;
-              //硬盘操作默认选中第一个
-              self.disks.push(it.realTitle);
-              self.checkDiskSize = it.realSize;
-            }
-
-          }
-
-        } else {
-          diskService.loadNewDiskList().then(function(newJsonObj) {
-            //console.log('newDiskListData:');
-            //console.log(newJsonObj);
-            if (newJsonObj && newJsonObj.length >= 1) {
-              for (var i = 0; i < newJsonObj.length; i++) {
-                var currentNode = newJsonObj[i];
-                it = angular.extend({}, tileTmpl);
-                it.icon = it.icon + 'disk';
-                it.span = {
-                  row: 1,
-                  col: 1
-                };
-                //硬盘详情
-                it.diskData = currentNode;
-                it.background = it.background;
-                it.span.row = it.span.col = 3;
-                //组装表格中需要显示的数据
-                var detailData = {};
-
-                if (currentNode.vendor) {
-                  it.product = currentNode.vendor;
-                  detailData['product'] = currentNode.vendor;
-                }
-
-                if (currentNode.model) {
-                  detailData['description'] = currentNode.model;
-                }
-
-
-                if (currentNode.serial) {
-                  it.serial = currentNode.serial;
-                  detailData['serial'] = currentNode.serial;
-                }
-
-                if (currentNode.name) {
-                  detailData['logicalname'] = "/dev/" + currentNode.name;
-                }
-
-                if (currentNode.size) {
-                  detailData['size'] = currentNode.size;
-                }
-                var diskKeyArr = Object.keys(detailData);
-                // console.log('diskKeyArr:');
-                // console.log(diskKeyArr);
-                it.currentDiskDetail = [];
-                for (var key in diskKeyArr) {
-                  var tempJson = {};
-                  tempJson['key'] = diskKeyArr[key];
-                  tempJson['value'] = detailData[diskKeyArr[key]];
-                  it.currentDiskDetail.push(tempJson);
-                }
-                it.title = "/dev/" + currentNode.name;
-                it.realTitle = it.title;
-                if (it.title.length > 10) {
-                  it.title = it.title.substr(0, 10) + "...";
-                }
-                it.realSize = currentNode.size;
-                if (currentNode.size) {
-                  var diskNodeSize = currentNode.size / 1024 /
-                    1024 /
-                    1024;
-                  it.realSize = currentNode.size;
-                  it.capacity = diskNodeSize.toFixed(2);
-                } else {
-                  it.capacity = 0;
-                }
-                results.push(it);
-                if (i === 0 && it.diskData && it.title) {
-                  //self.detailData = it.diskData;
-                  self.detailData = [];
-                  self.detailData = it.currentDiskDetail;
-                  // console.log('self.detailData:');
-                  // console.log(self.detailData);
-                  self.showTitle = it.title;
-                  //硬盘操作默认选中第一个
-                  self.disks.push(it.realTitle);
-                  self.checkDiskSize = it.realSize;
-                }
-              }
-            }
-          });
-        }
-
-
-        //}
-        //加载完毕取消等待消息
+        buildHardDiskData(expectUsbArr, tileTmpl, results)
+          //加载完毕取消等待消息
         $interval.cancel(stop);
         //检测USB设备
         if (self.usbArr.length <= 0) {
           self.showDialog('克隆提示', '请插入USB设备进行操作!', '操作提示', '返回操作');
         }
         self.activated = false;
-
-
         //usb全选和不选操作
         self.selected = [];
         self.toggle = function(item, list) {
@@ -465,8 +243,8 @@
       self.postData['blockSize'] = self.blockSize;
 
       self.postStr = JSON.stringify(self.postData);
-      //console.log('postStr:');
-      //console.log(self.postStr);
+      console.log('postStr:');
+      console.log(self.postStr);
 
       try {
         //var cloneOut = '/tmp/p';
@@ -591,171 +369,179 @@
           return;
         }
         var usbData = disk['usbJsonData'];
-        //console.log(usbData.length);
-        //组装usb信息
         buildUSBData(usbData, tileTmpl);
-        //callback();
-        //console.log("self.usbArr:");
-        //console.log(self.usbArr);
       });
     }
-
-    function buildUSBData(usbData, tileTmpl) {
-      if (usbData) {
-        //console.log('usbData.length:');
-        //console.log(usbData.length);
-        for (var i = 0; i < usbData.length; i++) {
-          var currentNode = usbData[i];
-          //console.log('currentNode:');
-          //console.log(currentNode);
-          var mountedDisk;
-          //当存在usb设备2个分区时只显示第一块分区
-          if (currentNode.node && currentNode.node.node && currentNode.node.node
-            .length >= 2) {
-            var tmpCurrentNodes = currentNode.node.node;
-            var judgeCycle = false;
-            for (var t = 0; t < tmpCurrentNodes.length; t++) {
-              var tmpFirstNode = tmpCurrentNodes[t];
-              if (tmpFirstNode.configuration && tmpFirstNode.configuration.setting &&
-                tmpFirstNode.logicalname.length >= 2) {
-                var tmpFirstNodeSettingArr = tmpFirstNode.configuration.setting;
-                for (var k = 0; k < tmpFirstNodeSettingArr.length; k++) {
-                  var tmpFirstNodeConfig = tmpFirstNodeSettingArr[k];
-                  if (tmpFirstNodeConfig.$ && tmpFirstNodeConfig.$.id &&
-                    tmpFirstNodeConfig.$.id ==
-                    'state') {
-                    if (tmpFirstNodeConfig.$.value == 'mounted') {
-                      //console.log("double partition");
-                      //console.log(tmpFirstNode);
-                      currentNode.node.node = tmpFirstNode;
-                      currentNode.node.size._ = tmpFirstNode.size._;
-                      //console.log(JSON.stringify(tmpFirstNode));
-                      judgeCycle = true;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (judgeCycle) {
-                break;
-              }
-            }
-          }
-          //将不规则的USB设备排除
-          if (!(currentNode.node && currentNode.node.node && currentNode.node
-              .node
-              .node && typeof currentNode.node.node.node == 'object')) {
-            var tempState = "";
-            if (currentNode.node && currentNode.node.node && currentNode.node
-              .node.configuration && currentNode.node
-              .node.configuration.setting) {
-
-              var subConfigSettingArr = currentNode.node.node.configuration
-                .setting;
-              for (var j = 0; j < subConfigSettingArr.length; j++) {
-                var subConfig = subConfigSettingArr[j];
-                if (subConfig.$ && subConfig.$.id && subConfig.$.id ==
-                  'state') {
-                  tempState = subConfig.$.value;
-                  break;
-                }
-              }
-            }
-
-            if (tempState == 'mounted') {
-              //处理
-
+    //构建内置硬盘信息
+    function buildHardDiskData(expectUsbArr, tileTmpl, results) {
+      if (expectUsbArr) {
+        if (expectUsbArr && expectUsbArr.length >= 1) {
+          for (var i = 0; i < expectUsbArr.length; i++) {
+            var currentNode = expectUsbArr[i];
+            if (currentNode.name && currentNode.children && currentNode.children
+              .length >= 1) {
               it = angular.extend({}, tileTmpl);
-              it.icon = it.icon + 'usb';
-              it.background = 'blue';
+              it.icon = it.icon + 'disk';
               it.span = {
                 row: 1,
                 col: 1
               };
-              //usb详情
+              //硬盘详情
               it.diskData = currentNode;
+              it.background = it.background;
               it.span.row = it.span.col = 3;
+              //组装表格中需要显示的数据
+              var detailData = {};
 
-              if (typeof currentNode.node.node.logicalname == 'object') {
-                it.title = currentNode.node.node.logicalname[0];
-              } else if (typeof currentNode.node.node.logicalname ==
-                'string') {
-                it.title = currentNode.node.node.logicalname;
+              if (currentNode.model) {
+                detailData['description'] = currentNode.model;
               }
-              it.realTitle = it.title;
+
+              if (currentNode.vendor) {
+                it.product = currentNode.vendor;
+                detailData['product'] = currentNode.vendor;
+              }
+
               if (currentNode.serial) {
                 it.serial = currentNode.serial;
+                detailData['serial'] = currentNode.serial;
               }
-              if (currentNode.node && currentNode.node.node && currentNode.node
-                .node
-                .serial) {
-                it.serial = currentNode.node.node.serial;
-              }
-              if (currentNode.product) {
-                it.product = currentNode.product;
+              detailData['logicalname'] = it.title + currentNode.name.trim();
+              if (currentNode.size) {
+                detailData['size'] = currentNode.size;
               }
 
-              if (currentNode.node && currentNode.node.node && currentNode.node
-                .node
-                .product) {
-                it.product = currentNode.node.node.product;
-              }
-              if (currentNode.serial) {
-                it.serial = currentNode.serial;
-              }
-              //组装usb名称和logicalname
-              if (currentNode.node.node && currentNode.node.node &&
-                currentNode.node
-                .node.logicalname) {
-                if (typeof currentNode.node.node.logicalname == 'object') {
-                  var usbLogicalNameIndex = currentNode.node.node.logicalname
-                    .length - 1;
-                  var usbName = currentNode.node.node.logicalname[
-                    usbLogicalNameIndex];
-                  it.realTitle = usbName;
-                  //计算USB剩余的存储空间
-
-                  var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
-                  if (usbUserSpace) {
-                    it.usbUesSpace = parseInt(usbUserSpace.toString());
-                    it.useCapacity = (usbUserSpace / 1000 / 1000).toFixed(1);
+              if (currentNode.children && currentNode.children.length >
+                0) {
+                for (var cnode = 0; cnode < currentNode.children.length; cnode++) {
+                  var subNode = currentNode.children[cnode];
+                  if (subNode.serial && subNode.name) {
+                    detailData[subNode.name + '.serial'] =
+                      subNode.serial;
                   }
-                  var usbNameArr = usbName.split('/');
-                  var usbNameEndIndex = usbNameArr.length - 1;
-                  it.title = usbNameArr[usbNameEndIndex];
-
-                  self.usbValArr.push(it.realTitle);
+                  if (subNode.name) {
+                    detailData[subNode.name + '.logicalname'] =
+                      subNode.name;
+                  }
+                  if (subNode.size) {
+                    detailData[subNode.name + '.size'] = subNode.size._;
+                  }
+                  if (subNode.fstype && subNode.name) {
+                    detailData[subNode.name + '.filesystem'] = subNode.fstype;
+                  }
                 }
               }
-              if (it.title.length > 15) {
+
+              var diskKeyArr = Object.keys(detailData);
+              it.currentDiskDetail = [];
+              for (var key in diskKeyArr) {
+                var tempJson = {};
+                tempJson['key'] = diskKeyArr[key];
+                tempJson['value'] = detailData[diskKeyArr[key]];
+                it.currentDiskDetail.push(tempJson);
+              }
+              it.title = it.title + currentNode.name;
+              it.realTitle = it.title;
+              if (it.title.length > 10) {
                 it.title = it.title.substr(0, 10) + "...";
               }
-
-              if (currentNode.node && currentNode.node.size && currentNode.node
-                .size
-                ._) {
-                var diskNodeSize = currentNode.node.size._ / 1000 / 1000 /
-                  1000;
-                it.capacity = diskNodeSize.toFixed(1);
+              if (currentNode.size) {
+                var diskNodeSize = currentNode.size / 1024 / 1024 /
+                  1024;
+                it.realSize = currentNode.size;
+                it.capacity = diskNodeSize.toFixed(2);
               } else {
                 it.capacity = 0;
               }
-              //计算使用比例
-              if (it.capacity && it.useCapacity && it.capacity > 0) {
-                it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(
-                  0);
+              results.push(it);
+              //默认显示第一项
+              if (i === 0 && it.diskData && it.title) {
+                //self.detailData = it.diskData;
+                self.detailData = [];
+                self.detailData = it.currentDiskDetail;
+                // console.log('self.detailData:');
+                // console.log(self.detailData);
+                self.showTitle = it.title;
+                //硬盘操作默认选中第一个
+                self.disks.push(it.realTitle);
+                self.checkDiskSize = it.realSize;
               }
-              self.usbArr.push(it);
             }
           }
         }
-
       }
     }
 
+    //构建usb信息
+    function buildUSBData(usbData, tileTmpl) {
+      if (usbData && usbData.length > 0) {
+
+        for (var i = 0; i < usbData.length; i++) {
+          var currentNode = usbData[i];
+          console.log("currentNode:");
+          console.log(currentNode);
+
+          var subNode = null;
+          if (currentNode.children && currentNode.children.length >= 1) {
+            var tempNodeArr = [];
+            for (var j = 0; j < currentNode.children.length; j++) {
+              var usbNode = currentNode.children[j];
+              if (usbNode.mountpoint !== '/cdrom') {
+                tempNodeArr.push(usbNode);
+              }
+            }
+            subNode = tempNodeArr.splice(0, 1)[0];
+          }
+          console.log('subNode:');
+          console.log(subNode);
 
 
+
+          if (subNode && subNode.mountpoint) {
+            it = angular.extend({}, tileTmpl);
+            it.icon = it.icon + 'usb';
+            it.background = 'blue';
+            it.span = {
+              row: 1,
+              col: 1
+            };
+            //usb详情
+            it.diskData = subNode;
+            it.span.row = it.span.col = 3;
+            subNode.mountpoint = subNode.mountpoint.replace(/\s+/g, "");
+            it.realTitle = subNode.mountpoint;
+            var usbMountPointArr = subNode.mountpoint.split('/');
+            it.title = usbMountPointArr[usbMountPointArr.length - 1].replace(
+              /\s+/g, "");
+            if (currentNode.serial) {
+              it.serial = currentNode.serial;
+            }
+            if (currentNode.vendor) {
+              it.product = currentNode.vendor;
+            }
+            var usbUserSpace = diskService.calcUSBSpace(it.realTitle);
+            if (usbUserSpace) {
+              it.usbUesSpace = parseInt(usbUserSpace.toString());
+              it.useCapacity = (usbUserSpace / 1024 / 1024).toFixed(1);
+            }
+            self.usbValArr.push(it.realTitle);
+            if (it.title.length >= 15) {
+              it.title = it.title.substr(0, 10) + "...";
+            }
+            it.title = it.title.replace('-', '_');
+            if (subNode.size) {
+              var diskNodeSize = subNode.size / 1024 / 1024 /
+                1024;
+              it.capacity = diskNodeSize.toFixed(1);
+            } else {
+              it.capacity = 0;
+            }
+            it.capacityDiff = (it.useCapacity / it.capacity * 100).toFixed(0);
+            self.usbArr.push(it);
+          }
+
+        }
+      }
+    }
   }
-
-
 })();

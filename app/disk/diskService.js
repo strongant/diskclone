@@ -14,20 +14,20 @@
 
   const log4js = require('log4js');
 
-  log4js.configure({
-    appenders: [{
-      type: 'console'
-    }, {
-      type: 'file',
-      filename: '/tmp/access.log',
-      maxLogSize: 1024,
-      backups: 4,
-      category: 'normal'
-    }],
-    replaceConsole: true
-  });
-  const logger = log4js.getLogger('diskclone');
-  logger.setLevel('INFO');
+  /*  log4js.configure({
+      appenders: [{
+        type: 'console'
+      }, {
+        type: 'file',
+        filename: '/tmp/access.log',
+        maxLogSize: 1024,
+        backups: 4,
+        category: 'normal'
+      }],
+      replaceConsole: true
+    });
+    const logger = log4js.getLogger('diskclone');
+    logger.setLevel('INFO');*/
 
   /*const logger = require('./logger.js').logger(
     'diskService');*/
@@ -57,8 +57,9 @@
 
   //解析新版内置硬盘出错
   var newTxtPath = '/tmp/newdisk.json';
+  //name,mountpoint,model,vendor,serial,size,hotplug,type,fstype -b -J >/tmp/data.json
   var execInnerDiskCMDStr =
-    'sudo lsblk -o name,size,vendor,model,serial,type,hotplug -d -b -J >' +
+    'sudo lsblk -o name,mountpoint,model,vendor,serial,size,hotplug,type,fstype -d -b -J >' +
     newTxtPath;
 
   //{USBMountPoint}:U盘挂载点
@@ -91,8 +92,7 @@
       deleteFileExists: deleteFileExists,
       getUSBProduct: getUSBProduct,
       getUSBSerialNO: getUSBSerialNO,
-      killPython: killPython,
-      loadNewDiskList: loadNewDiskList
+      killPython: killPython
     };
 
     function killPython() {
@@ -107,101 +107,47 @@
       var cdromJsonArr = [];
       var diskData = {};
       var deferred = $q.defer();
-      var child = exec(execDiskCMDStr);
+      var child = exec(execInnerDiskCMDStr);
       child.stderr.on('data', function(data) {
-        console.log('stdout: ' + data);
+        console.log('stderr: ' + data);
         //logger.info("stdout:" + data);
         deferred.reject(data);
       });
       child.on('close', function(code) {
-        var diskText = fs.readFileSync(txtPath, "utf8");
-        var diskJson = null;
-        var jsonObj = null;
-        parseString(diskText, {
-          explicitArray: false,
-          attrkey: '$'
-        }, function(err, result) {
-          if (err) {
-            console.log(err);
-            deferred.reject(err);
-          }
-          jsonObj = result;
-        });
         try {
-          if (jsonObj) {
-            diskJson = jsonObj.list.node;
-            if (diskJson) {
-              for (var i = 0; i < diskJson.length; i++) {
-                if (diskJson[i].logicalname && diskJson[i].node) {
-                  var subNode = diskJson[i];
-
-                  if (subNode.node.$.id === 'cdrom') {
-                    cdromJsonArr.push(subNode);
-                  } else if (
-                    subNode.businfo && subNode.businfo.indexOf('usb') >=
-                    0) {
-                    usbJsonArr.push(subNode);
-                  } else {
-                    hardDiskJsonArr.push(subNode);
-                  }
-
-                }
+          var allDiskData = fs.readFileSync(newTxtPath, "utf-8");
+          var allDiskJSONData = JSON.parse(allDiskData);
+          if (allDiskJSONData.blockdevices) {
+            var diskArr = allDiskJSONData.blockdevices;
+            for (var i = 0; i < diskArr.length; i++) {
+              var diskNode = diskArr[i];
+              //build cdrom
+              if (diskNode.hotplug === '1' && diskNode.type === 'rom') {
+                cdromJsonArr.push(diskNode);
+              } else if (diskNode.hotplug === '0' && diskNode.type ===
+                'disk') {
+                //build harddisk
+                hardDiskJsonArr.push(diskNode);
+              } else if (diskNode.hotplug === '1' && diskNode.type ===
+                'disk') {
+                //build usb
+                usbJsonArr.push(diskNode);
               }
             }
             diskData['cdromJsonData'] = cdromJsonArr;
             diskData['usbJsonData'] = usbJsonArr;
             diskData['hardDiskJsonData'] = hardDiskJsonArr;
-            deferred.resolve(diskData);
           }
+          deferred.resolve(diskData);
         } catch (e) {
           console.log(e);
-          //logger.debug("err:" + e.toString());
           deferred.reject(e);
         }
       });
       return deferred.promise;
     }
 
-    //解析新的内置硬盘列表信息
-    function loadNewDiskList() {
-      var deferred = $q.defer();
-      var child = exec(execInnerDiskCMDStr);
-      var newHardDiskData = {};
-      var newHardDiskJsonArr = [];
-      child.stderr.on('data', function(data) {
-        console.log('stdout: ' + data);
-        //logger.info("stdout:" + data);
-        deferred.reject(data);
-      });
 
-      child.on('close', function(code) {
-        var newDiskText = fs.readFileSync(newTxtPath, "utf8");
-        var newDiskJson = null;
-        var tempDiskObj = null;
-
-        try {
-          var newJsonObj = JSON.parse(newDiskText);
-          if (newJsonObj && newJsonObj.blockdevices) {
-            newDiskJson = newJsonObj.blockdevices;
-            if (newDiskJson) {
-              for (var t = 0; t < newDiskJson.length; t++) {
-                tempDiskObj = newDiskJson[t];
-                if (tempDiskObj.type === 'disk' && tempDiskObj.hotplug ===
-                  '0') {
-                  newHardDiskJsonArr.push(tempDiskObj);
-                }
-              }
-            }
-            deferred.resolve(newHardDiskJsonArr);
-          }
-        } catch (e) {
-          console.log(e);
-          //logger.error(e.toString());
-          deferred.reject(e);
-        }
-      });
-      return deferred.promise;
-    }
 
     //通过指定的USB设备名称计算已经使用空间
     function calcUSBSpace(usbMountPoint) {
